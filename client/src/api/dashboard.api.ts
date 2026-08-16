@@ -1,3 +1,5 @@
+import { apiClient } from '@/shared/api';
+
 export interface DashboardAccount {
     id: string;
     name: string;
@@ -12,11 +14,13 @@ export interface DashboardTransaction {
     amount: string;
     description: string | null;
     date: string;
+
     account: {
         id: string;
         name: string;
         currency: string;
     };
+
     category: {
         id: string;
         name: string;
@@ -39,15 +43,7 @@ interface DashboardResponse {
 }
 
 export const getDashboard = async (): Promise<DashboardData> => {
-    const response = await fetch('http://localhost:4000/api/dashboard', {
-        credentials: 'include',
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to load dashboard');
-    }
-
-    const data: DashboardResponse = await response.json();
+    const data = await apiClient<DashboardResponse>('/api/dashboard');
 
     return data.dashboard;
 };

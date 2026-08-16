@@ -30,43 +30,81 @@ export const en = {
 
         accounts: {
             title: 'Accounts',
+            subtitle: 'Manage your financial accounts',
             addAccount: 'Add account',
             yourAccounts: 'Your accounts',
+
             name: 'Name',
             type: 'Type',
             currency: 'Currency',
+
             noAccounts: 'No accounts yet.',
+
             bank: 'Bank',
             cash: 'Cash',
             savings: 'Savings',
             investment: 'Investment',
+
+            error: 'Failed to load accounts',
         },
 
         categories: {
             title: 'Categories',
+            subtitle: 'Manage your income and expense categories',
             income: 'Income',
             expenses: 'Expenses',
             addCategory: 'Add category',
             noCategories: 'No categories yet.',
-        },
-
-        transactions: {
-            title: 'Transactions',
-            addTransaction: 'Add transaction',
-            income: 'Income',
-            expense: 'Expense',
-            amount: 'Amount',
-            account: 'Account',
-            category: 'Category',
-            description: 'Description',
-            date: 'Date',
-            noTransactions: 'No transactions yet.',
+            error: 'Failed to load categories',
         },
 
         language: {
             label: 'Language',
             english: 'English',
             russian: 'Русский',
+        },
+
+        auth: {
+            login: 'Login',
+            loggingIn: 'Logging in...',
+            email: 'Email',
+            password: 'Password',
+            loginSubtitle: 'Sign in to your FinTrack account',
+            loginError: 'Failed to login',
+            logout: 'Log out'
+        },
+
+        transactions: {
+            title: 'Transactions',
+            subtitle: 'Manage your income and expenses',
+
+            addTransaction: 'Add transaction',
+            history: 'Transactions history',
+
+            type: 'Type',
+            income: 'Income',
+            expense: 'Expense',
+
+            account: 'Account',
+            category: 'Category',
+            amount: 'Amount',
+            description: 'Description',
+            date: 'Date',
+
+            selectAccount: 'Select account',
+            selectCategory: 'Select category',
+
+            descriptionPlaceholder: 'Salary',
+
+            creating: 'Creating...',
+
+            noTransactions: 'No transactions yet.',
+            noDescription: 'No description',
+
+            error: 'Failed to load transactions',
+            createError: 'Failed to create transaction',
+
+            invalidAmount: 'Amount must be greater than zero',
         },
     },
 };

@@ -1,20 +1,22 @@
 .accounts {
     min-height: 100vh;
     padding: 32px;
+
     background: #f5f7fa;
 }
 
 .container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
 }
 
 .header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
 
-    gap: 20px;
+    gap: 24px;
 
     margin-bottom: 32px;
 }
@@ -22,73 +24,104 @@
 .title {
     margin: 0;
 
-    color: #111827;
     font-size: 32px;
     font-weight: 700;
+
+    color: #111827;
+}
+
+.subtitle {
+    margin: 8px 0 0;
+
+    color: #6b7280;
 }
 
 .addButton {
-    padding: 10px 16px;
+    flex-shrink: 0;
 
-    border: none;
+    min-height: 44px;
+
+    padding: 10px 18px;
+
+    border: 0;
     border-radius: 8px;
 
     background: #111827;
+
     color: #ffffff;
 
-    font-size: 14px;
+    font: inherit;
     font-weight: 600;
 
     cursor: pointer;
 
     transition:
-        background 0.2s ease,
-        transform 0.2s ease;
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
 
-    &:hover {
-        background: #1f2937;
-        transform: translateY(-1px);
-    }
+.addButton:hover {
+    transform: translateY(-1px);
+}
+
+.addButton:active {
+    transform: translateY(0);
+}
+
+.section {
+    padding: 24px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    background: #ffffff;
 }
 
 .sectionTitle {
     margin: 0 0 20px;
 
-    color: #111827;
     font-size: 20px;
     font-weight: 600;
+
+    color: #111827;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
     gap: 16px;
 }
 
 .empty {
     margin: 0;
 
+    padding: 40px 20px;
+
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+
+    text-align: center;
+
     color: #6b7280;
 }
 
-.loading,
 .error {
-    min-height: 100vh;
+    min-height: 300px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 18px;
-}
-
-.error {
     color: #dc2626;
+
+    font-size: 16px;
 }
 
 @media (max-width: 1024px) {
     .grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -98,19 +131,36 @@
     }
 
     .header {
-        align-items: flex-start;
         flex-direction: column;
+
+        margin-bottom: 24px;
     }
 
     .title {
         font-size: 26px;
     }
 
+    .addButton {
+        width: 100%;
+    }
+
+    .section {
+        padding: 20px 16px;
+
+        border-radius: 12px;
+    }
+
     .grid {
         grid-template-columns: 1fr;
     }
+}
 
-    .addButton {
-        width: 100%;
+@media (max-width: 480px) {
+    .accounts {
+        padding: 16px 12px;
+    }
+
+    .section {
+        padding: 16px 12px;
     }
 }

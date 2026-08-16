@@ -1,3 +1,5 @@
+import { apiClient } from '@/shared/api';
+
 export interface MonthlyAnalytics {
     month: string;
     income: number;
@@ -23,15 +25,7 @@ interface AnalyticsResponse {
 }
 
 export const getAnalytics = async (): Promise<AnalyticsData> => {
-    const response = await fetch('http://localhost:4000/api/analytics', {
-        credentials: 'include',
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to load analytics');
-    }
-
-    const data: AnalyticsResponse = await response.json();
+    const data = await apiClient<AnalyticsResponse>('/api/analytics');
 
     return data.analytics;
 };

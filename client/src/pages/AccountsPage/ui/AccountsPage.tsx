@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AccountCard, type Account } from '@/widgets/accounts/AccountCard';
+import { getAccounts, type Account } from '@/api/accounts.api';
+import { AccountCard } from '@/widgets/accounts/AccountCard';
+
+import { AccountsSkeleton } from './AccountsSkeleton/AccountsSkeleton';
 
 import styles from './AccountsPage.module.scss';
 
@@ -18,52 +21,53 @@ export const AccountsPage = () => {
                 setIsLoading(true);
                 setError(null);
 
-                const response = await fetch(
-                    'http://localhost:4000/api/accounts',
-                    {
-                        credentials: 'include',
-                    },
-                );
+                const data = await getAccounts();
 
-                if (!response.ok) {
-                    throw new Error('Failed to load accounts');
-                }
-
-                const data = await response.json();
-
-                setAccounts(data.accounts);
+                setAccounts(data);
             } catch (error) {
                 console.error(error);
 
-                setError('Failed to load accounts');
+                setError(t('accounts.error'));
             } finally {
                 setIsLoading(false);
             }
         };
 
         loadAccounts();
-    }, []);
+    }, [t]);
 
     if (isLoading) {
-        return <div className={styles.loading}>{t('common.loading')}</div>;
+        return <AccountsSkeleton />;
     }
 
     if (error) {
-        return <div className={styles.error}>{error}</div>;
+        return (
+            <main className={styles.accounts}>
+                <div className={styles.container}>
+                    <div className={styles.error}>{error}</div>
+                </div>
+            </main>
+        );
     }
 
     return (
         <main className={styles.accounts}>
             <div className={styles.container}>
                 <header className={styles.header}>
-                    <h1 className={styles.title}>{t('accounts.title')}</h1>
+                    <div>
+                        <h1 className={styles.title}>{t('accounts.title')}</h1>
+
+                        <p className={styles.subtitle}>
+                            {t('accounts.subtitle')}
+                        </p>
+                    </div>
 
                     <button type="button" className={styles.addButton}>
                         {t('accounts.addAccount')}
                     </button>
                 </header>
 
-                <section>
+                <section className={styles.section}>
                     <h2 className={styles.sectionTitle}>
                         {t('accounts.yourAccounts')}
                     </h2>

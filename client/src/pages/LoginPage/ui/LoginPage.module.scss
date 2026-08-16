@@ -1,0 +1,193 @@
+.login {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: #f5f7fa;
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 40px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 20px 40px rgb(17 24 39 / 8%),
+        0 4px 12px rgb(17 24 39 / 4%);
+}
+
+.header {
+    text-align: center;
+
+    margin-bottom: 32px;
+}
+
+.logo {
+    width: 56px;
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 16px;
+
+    border-radius: 16px;
+
+    background: #111827;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.title {
+    margin: 0;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+.subtitle {
+    margin: 8px 0 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #374151;
+}
+
+.input {
+    width: 100%;
+    min-height: 46px;
+
+    padding: 10px 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #111827;
+
+    font: inherit;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+    color: #9ca3af;
+}
+
+.input:focus {
+    border-color: #111827;
+
+    box-shadow: 0 0 0 3px rgb(17 24 39 / 8%);
+}
+
+.error {
+    padding: 12px 14px;
+
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+
+    background: #fef2f2;
+
+    color: #dc2626;
+
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.submit {
+    width: 100%;
+    min-height: 48px;
+
+    margin-top: 4px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: #111827;
+
+    color: #ffffff;
+
+    font: inherit;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.submit:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+    .login {
+        align-items: flex-start;
+
+        padding: 16px;
+        padding-top: 48px;
+    }
+
+    .card {
+        padding: 28px 20px;
+
+        border-radius: 16px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+}

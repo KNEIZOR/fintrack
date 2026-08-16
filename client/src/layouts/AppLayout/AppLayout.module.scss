@@ -1,0 +1,42 @@
+.appLayout {
+    min-height: 100vh;
+
+    display: flex;
+
+    background: #f5f7fa;
+}
+
+.content {
+    min-width: 0;
+    min-height: 100vh;
+
+    flex: 1;
+
+    overflow-x: hidden;
+}
+
+.topbar {
+    min-height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    padding: 0 32px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 560px) {
+    .topbar {
+        padding: 0 16px;
+    }
+}

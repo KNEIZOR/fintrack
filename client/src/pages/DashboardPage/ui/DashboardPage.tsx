@@ -8,6 +8,7 @@ import { getAnalytics } from '@/api/analytics.api';
 import { BalanceCard } from '@/widgets/dashboard/ui/BalanceCard';
 import { StatCard } from '@/widgets/dashboard/ui/StatCard';
 import { RecentTransactions } from '@/widgets/dashboard/ui/RecentTransactions';
+import { DashboardSkeleton } from './DashboardSkeleton/DashboardSkeleton';
 
 import styles from './DashboardPage.module.scss';
 
@@ -48,7 +49,7 @@ export const DashboardPage = () => {
     }, []);
 
     if (isLoading) {
-        return <div className={styles.loading}>{t('dashboard.loading')}</div>;
+        return <DashboardSkeleton />;
     }
 
     if (error) {

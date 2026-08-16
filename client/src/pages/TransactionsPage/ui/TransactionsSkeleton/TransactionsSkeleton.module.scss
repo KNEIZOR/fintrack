@@ -1,0 +1,264 @@
+.transactions {
+    min-height: 100vh;
+    padding: 32px;
+
+    background: #f5f7fa;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    margin-bottom: 32px;
+}
+
+.title {
+    width: 220px;
+    height: 38px;
+
+    border-radius: 8px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.subtitle {
+    width: 300px;
+    height: 16px;
+
+    margin-top: 8px;
+
+    border-radius: 6px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.formSection,
+.history {
+    padding: 24px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    background: #ffffff;
+}
+
+.formSection {
+    margin-bottom: 24px;
+}
+
+.sectionTitle {
+    width: 190px;
+    height: 24px;
+
+    margin-bottom: 24px;
+
+    border-radius: 6px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.form {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.label {
+    width: 80px;
+    height: 14px;
+
+    border-radius: 5px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.input {
+    width: 100%;
+    height: 44px;
+
+    border-radius: 8px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.button {
+    width: 150px;
+    height: 44px;
+
+    margin-top: 20px;
+
+    border-radius: 8px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.transaction {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    padding: 18px 0;
+
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.transaction:last-child {
+    border-bottom: 0;
+}
+
+.transactionInfo {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    flex: 1;
+}
+
+.category {
+    width: 140px;
+    height: 18px;
+
+    border-radius: 6px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.account {
+    width: 110px;
+    height: 14px;
+
+    border-radius: 5px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.description {
+    width: 220px;
+    height: 14px;
+
+    border-radius: 5px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.date {
+    width: 90px;
+    height: 12px;
+
+    border-radius: 5px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.amount {
+    width: 100px;
+    height: 20px;
+
+    flex-shrink: 0;
+
+    border-radius: 6px;
+
+    background: #e5e7eb;
+
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}
+
+@media (max-width: 768px) {
+    .transactions {
+        padding: 20px 16px;
+    }
+
+    .form {
+        grid-template-columns: 1fr;
+    }
+
+    .transaction {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .formSection,
+    .history {
+        padding: 20px 16px;
+
+        border-radius: 12px;
+    }
+
+    .transaction {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 12px;
+    }
+
+    .amount {
+        width: 90px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .title,
+    .subtitle,
+    .sectionTitle,
+    .label,
+    .input,
+    .button,
+    .category,
+    .account,
+    .description,
+    .date,
+    .amount {
+        animation: none;
+    }
+}

@@ -1,17 +1,17 @@
 import { Outlet } from 'react-router-dom';
 
-import { Sidebar } from '../../widgets/sidebar/ui/Sidebar';
-import { LanguageSwitcher } from '../../widgets/header/ui/LanguageSwitcher/LanguageSwitcher';
+import { LanguageSwitcher } from '@/widgets/header/ui/LanguageSwitcher/LanguageSwitcher';
+import { Sidebar } from '@/widgets/sidebar';
 
-import './AppLayout.scss';
+import styles from './AppLayout.module.scss';
 
 export const AppLayout = () => {
     return (
-        <div className="app-layout">
+        <div className={styles.appLayout}>
             <Sidebar />
 
-            <div className="app-layout__content">
-                <div className="app-layout__topbar">
+            <div className={styles.content}>
+                <div className={styles.topbar}>
                     <LanguageSwitcher />
                 </div>
 

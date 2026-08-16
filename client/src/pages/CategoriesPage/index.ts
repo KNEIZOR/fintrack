@@ -1,0 +1,1 @@
+export { CategoriesPage as default } from './ui/CategoriesPage';
