@@ -1,0 +1,61 @@
+.language-switcher {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    &__label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.04em;
+    }
+
+    &__select {
+        appearance: none;
+        min-width: 72px;
+        padding: 8px 32px 8px 12px;
+
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+
+        background-color: #ffffff;
+        color: #1e293b;
+
+        font-size: 14px;
+        font-weight: 500;
+
+        cursor: pointer;
+        outline: none;
+
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            background-color 0.2s ease;
+
+        &:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+
+        &:focus {
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15);
+        }
+    }
+
+    &::after {
+        content: '⌄';
+
+        position: absolute;
+        right: 11px;
+        top: 50%;
+
+        transform: translateY(-55%);
+
+        pointer-events: none;
+
+        color: #64748b;
+        font-size: 14px;
+    }
+}

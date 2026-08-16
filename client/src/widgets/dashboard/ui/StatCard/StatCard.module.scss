@@ -1,0 +1,32 @@
+.card {
+    padding: 20px;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.title {
+    display: block;
+    margin-bottom: 8px;
+
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.value {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.income {
+    color: #16a34a;
+}
+
+.expense {
+    color: #dc2626;
+}
+
+.neutral {
+    color: #111827;
+}

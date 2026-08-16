@@ -1,0 +1,33 @@
+.card {
+    padding: 24px;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.value {
+    margin: 0;
+
+    color: #111827;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 20px;
+    }
+
+    .value {
+        font-size: 26px;
+    }
+}
