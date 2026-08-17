@@ -1,24 +1,15 @@
 import { prisma } from '../lib/prisma.js';
-import { Prisma, TransactionType } from '@prisma/client';
-
-interface CreateTransactionInput {
-    accountId: string;
-    categoryId: string;
-    type: TransactionType;
-    amount: number;
-    description?: string;
-    date: string;
-}
+import type {
+    CreateTransactionInput,
+    UpdateTransactionInput,
+} from '../schemas/transaction.schema.js';
 
 export const createTransaction = async (
     userId: string,
     data: CreateTransactionInput,
 ) => {
-    if (data.amount <= 0) {
-        throw new Error('Amount must be greater than zero');
-    }
-
     return prisma.$transaction(async (tx) => {
+        // Проверяем, что счёт принадлежит пользователю
         const account = await tx.account.findFirst({
             where: {
                 id: data.accountId,
@@ -30,11 +21,11 @@ export const createTransaction = async (
             throw new Error('Account not found');
         }
 
+        // Проверяем, что категория принадлежит пользователю
         const category = await tx.category.findFirst({
             where: {
                 id: data.categoryId,
                 userId,
-                type: data.type,
             },
         });
 
@@ -42,30 +33,29 @@ export const createTransaction = async (
             throw new Error('Category not found');
         }
 
+        // Проверяем соответствие типа транзакции типу категории
+        if (category.type !== data.type) {
+            throw new Error('Category type does not match transaction type');
+        }
+
+        const balanceChange =
+            data.type === 'INCOME' ? data.amount : -data.amount;
+
         const transaction = await tx.transaction.create({
             data: {
                 userId,
                 accountId: data.accountId,
                 categoryId: data.categoryId,
                 type: data.type,
-                amount: new Prisma.Decimal(data.amount),
+                amount: data.amount,
                 description: data.description,
-                date: new Date(data.date),
-            },
-            include: {
-                account: true,
-                category: true,
+                date: data.date,
             },
         });
 
-        const balanceChange =
-            data.type === TransactionType.INCOME
-                ? new Prisma.Decimal(data.amount)
-                : new Prisma.Decimal(data.amount).negated();
-
         await tx.account.update({
             where: {
-                id: account.id,
+                id: data.accountId,
             },
             data: {
                 balance: {
@@ -105,15 +95,6 @@ export const getTransactions = async (userId: string) => {
     });
 };
 
-interface UpdateTransactionInput {
-    accountId?: string;
-    categoryId?: string;
-    type?: TransactionType;
-    amount?: number;
-    description?: string;
-    date?: string;
-}
-
 export const updateTransaction = async (
     userId: string,
     transactionId: string,
@@ -131,25 +112,25 @@ export const updateTransaction = async (
             throw new Error('Transaction not found');
         }
 
-        if (data.amount !== undefined && data.amount <= 0) {
-            throw new Error('Amount must be greater than zero');
-        }
+        const newAccountId = data.accountId ?? existingTransaction.accountId;
 
-        const accountId =
-            data.accountId ?? existingTransaction.accountId;
+        const newCategoryId = data.categoryId ?? existingTransaction.categoryId;
 
-        const categoryId =
-            data.categoryId ?? existingTransaction.categoryId;
+        const newType = data.type ?? existingTransaction.type;
 
-        const type =
-            data.type ?? existingTransaction.type;
+        const newAmount = data.amount ?? Number(existingTransaction.amount);
 
-        const amount =
-            data.amount ?? Number(existingTransaction.amount);
+        const oldBalanceChange =
+            existingTransaction.type === 'INCOME'
+                ? Number(existingTransaction.amount)
+                : -Number(existingTransaction.amount);
 
+        const newBalanceChange = newType === 'INCOME' ? newAmount : -newAmount;
+
+        // Проверяем новый счёт
         const account = await tx.account.findFirst({
             where: {
-                id: accountId,
+                id: newAccountId,
                 userId,
             },
         });
@@ -158,11 +139,11 @@ export const updateTransaction = async (
             throw new Error('Account not found');
         }
 
+        // Проверяем новую категорию
         const category = await tx.category.findFirst({
             where: {
-                id: categoryId,
+                id: newCategoryId,
                 userId,
-                type,
             },
         });
 
@@ -170,32 +151,32 @@ export const updateTransaction = async (
             throw new Error('Category not found');
         }
 
-        // Возвращаем старый баланс
-        const oldBalanceChange =
-            existingTransaction.type === TransactionType.INCOME
-                ? new Prisma.Decimal(existingTransaction.amount)
-                : new Prisma.Decimal(existingTransaction.amount).negated();
+        if (category.type !== newType) {
+            throw new Error('Category type does not match transaction type');
+        }
 
+        /*
+         * Сначала отменяем влияние старой транзакции
+         * на старый счёт.
+         */
         await tx.account.update({
             where: {
                 id: existingTransaction.accountId,
             },
             data: {
                 balance: {
-                    decrement: oldBalanceChange,
+                    increment: -oldBalanceChange,
                 },
             },
         });
 
-        // Применяем новый баланс
-        const newBalanceChange =
-            type === TransactionType.INCOME
-                ? new Prisma.Decimal(amount)
-                : new Prisma.Decimal(amount).negated();
-
+        /*
+         * Затем применяем влияние новой транзакции
+         * к новому счёту.
+         */
         await tx.account.update({
             where: {
-                id: account.id,
+                id: newAccountId,
             },
             data: {
                 balance: {
@@ -204,39 +185,19 @@ export const updateTransaction = async (
             },
         });
 
-        const transaction = await tx.transaction.update({
+        return tx.transaction.update({
             where: {
                 id: transactionId,
             },
             data: {
-                accountId,
-                categoryId,
-                type,
-                amount: new Prisma.Decimal(amount),
+                accountId: newAccountId,
+                categoryId: newCategoryId,
+                type: newType,
+                amount: newAmount,
                 description: data.description,
-                date: data.date
-                    ? new Date(data.date)
-                    : existingTransaction.date,
-            },
-            include: {
-                account: {
-                    select: {
-                        id: true,
-                        name: true,
-                        currency: true,
-                    },
-                },
-                category: {
-                    select: {
-                        id: true,
-                        name: true,
-                        type: true,
-                    },
-                },
+                date: data.date,
             },
         });
-
-        return transaction;
     });
 };
 
@@ -253,59 +214,32 @@ export const deleteTransaction = async (
         });
 
         if (!transaction) {
-            return null;
+            throw new Error('Transaction not found');
         }
 
         const balanceChange =
-            transaction.type === TransactionType.INCOME
-                ? new Prisma.Decimal(transaction.amount).negated()
-                : new Prisma.Decimal(transaction.amount);
+            transaction.type === 'INCOME'
+                ? Number(transaction.amount)
+                : -Number(transaction.amount);
 
+        /*
+         * Удаляем влияние транзакции со счёта.
+         */
         await tx.account.update({
             where: {
                 id: transaction.accountId,
             },
             data: {
                 balance: {
-                    increment: balanceChange,
+                    increment: -balanceChange,
                 },
             },
         });
 
-        await tx.transaction.delete({
+        return tx.transaction.delete({
             where: {
                 id: transactionId,
             },
         });
-
-        return transaction;
-    });
-};
-
-export const getTransactionById = async (
-    userId: string,
-    transactionId: string,
-) => {
-    return prisma.transaction.findFirst({
-        where: {
-            id: transactionId,
-            userId,
-        },
-        include: {
-            account: {
-                select: {
-                    id: true,
-                    name: true,
-                    currency: true,
-                },
-            },
-            category: {
-                select: {
-                    id: true,
-                    name: true,
-                    type: true,
-                },
-            },
-        },
     });
 };

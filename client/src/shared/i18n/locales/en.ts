@@ -7,6 +7,7 @@ export const en = {
             delete: 'Delete',
             create: 'Create',
             edit: 'Edit',
+            close: 'Close',
         },
 
         navigation: {
@@ -46,6 +47,13 @@ export const en = {
             investment: 'Investment',
 
             error: 'Failed to load accounts',
+
+            addAccountDescription: 'Add a new account to track your finances',
+            accountName: 'Account name',
+            accountType: 'Account type',
+            initialBalance: 'Initial balance',
+            creating: 'Creating...',
+            createAccount: 'Create account',
         },
 
         categories: {
@@ -56,6 +64,12 @@ export const en = {
             addCategory: 'Add category',
             noCategories: 'No categories yet.',
             error: 'Failed to load categories',
+            addDescription: 'Add description',
+            name: 'Name',
+            namePlaceholder: 'Enter name',
+            type: 'Type',
+            creating: 'Creating',
+            deleteConfirmation: 'Are you sure you want to delete this?',
         },
 
         language: {
@@ -71,40 +85,48 @@ export const en = {
             password: 'Password',
             loginSubtitle: 'Sign in to your FinTrack account',
             loginError: 'Failed to login',
-            logout: 'Log out'
+            logout: 'Log out',
         },
 
         transactions: {
             title: 'Transactions',
             subtitle: 'Manage your income and expenses',
-
             addTransaction: 'Add transaction',
+            addDescription: 'Record a new financial transaction',
             history: 'Transactions history',
-
-            type: 'Type',
+            historyDescription: 'Your recent financial activity',
             income: 'Income',
             expense: 'Expense',
-
+            amount: 'Amount',
             account: 'Account',
             category: 'Category',
-            amount: 'Amount',
             description: 'Description',
+            descriptionPlaceholder: 'What was this transaction for?',
             date: 'Date',
-
             selectAccount: 'Select account',
             selectCategory: 'Select category',
-
-            descriptionPlaceholder: 'Salary',
-
             creating: 'Creating...',
-
             noTransactions: 'No transactions yet.',
-            noDescription: 'No description',
-
             error: 'Failed to load transactions',
-            createError: 'Failed to create transaction',
-
             invalidAmount: 'Amount must be greater than zero',
+            createError: 'Failed to create transaction',
+        },
+
+        analytics: {
+            title: 'Analytics',
+            subtitle: 'Income and expenses overview',
+            noData: 'No analytics data yet',
+            chartLabel: 'Financial analytics chart',
+
+            income: 'Income',
+            expenses: 'Expenses',
+            net: 'Net',
+
+            incomeByCategory: 'Income by category',
+            expensesByCategory: 'Expenses by category',
+
+            noIncome: 'No income yet',
+            noExpenses: 'No expenses yet',
         },
     },
 };

@@ -1,25 +1,24 @@
 import { Router } from 'express';
 
-import {
-    createTransaction,
-    getTransactions,
-    getTransactionById,
-    updateTransaction,
-    deleteTransaction,
-} from '../controllers/transaction.controller.js';
-
 import { authMiddleware } from '../middleware/auth.middleware.js';
+
+import {
+    create,
+    getAll,
+    remove,
+    update,
+} from '../controllers/transaction.controller.js';
 
 const router = Router();
 
 router.use(authMiddleware);
 
-router.get('/', getTransactions);
-router.get('/:id', getTransactionById);
+router.post('/', create);
 
-router.post('/', createTransaction);
+router.get('/', getAll);
 
-router.patch('/:id', updateTransaction);
-router.delete('/:id', deleteTransaction);
+router.patch('/:id', update);
+
+router.delete('/:id', remove);
 
 export default router;

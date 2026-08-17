@@ -1,53 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getCategories } from '@/api/categories.api';
-import { CategoryCard, type Category } from '@/widgets/categories/CategoryCard';
+import type { CreateCategoryInput } from '@/api/categories.api';
+
+import { CategoryCard } from '@/widgets/categories/CategoryCard';
 
 import { CategoriesSkeleton } from './CategoriesSkeleton/CategoriesSkeleton';
+import { CategoryModal } from './CategoryModal/CategoryModal';
+import { useCategories } from '../model/useCategories';
 
 import styles from './CategoriesPage.module.scss';
 
 export const CategoriesPage = () => {
     const { t } = useTranslation();
 
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const {
+        categories,
+        isLoading,
+        error,
+        isCreating,
+        isDeleting,
+        createCategory,
+        deleteCategory,
+    } = useCategories();
 
-    useEffect(() => {
-        const loadCategories = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-                const data = await getCategories();
+    const handleCreateCategory = async (data: CreateCategoryInput) => {
+        try {
+            await createCategory(data);
 
-                setCategories(data);
-            } catch (error) {
-                console.error(error);
-
-                setError(t('categories.error'));
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadCategories();
-    }, [t]);
+            setIsModalOpen(false);
+        } catch {
+            // Ошибка уже доступна через mutation.error
+        }
+    };
 
     if (isLoading) {
         return <CategoriesSkeleton />;
-    }
-
-    if (error) {
-        return (
-            <main className={styles.categories}>
-                <div className={styles.container}>
-                    <div className={styles.error}>{error}</div>
-                </div>
-            </main>
-        );
     }
 
     const incomeCategories = categories.filter(
@@ -72,10 +62,22 @@ export const CategoriesPage = () => {
                         </p>
                     </div>
 
-                    <button type="button" className={styles.addButton}>
+                    <button
+                        type="button"
+                        className={styles.addButton}
+                        onClick={() => setIsModalOpen(true)}
+                    >
                         {t('categories.addCategory')}
                     </button>
                 </header>
+
+                {error && (
+                    <div className={styles.error} role="alert">
+                        {error instanceof Error
+                            ? error.message
+                            : t('categories.error')}
+                    </div>
+                )}
 
                 <section className={styles.section}>
                     <h2 className={styles.sectionTitle}>
@@ -92,6 +94,8 @@ export const CategoriesPage = () => {
                                 <CategoryCard
                                     key={category.id}
                                     category={category}
+                                    onDelete={deleteCategory}
+                                    isDeleting={isDeleting}
                                 />
                             ))}
                         </div>
@@ -113,12 +117,22 @@ export const CategoriesPage = () => {
                                 <CategoryCard
                                     key={category.id}
                                     category={category}
+                                    onDelete={deleteCategory}
+                                    isDeleting={isDeleting}
                                 />
                             ))}
                         </div>
                     )}
                 </section>
             </div>
+
+            <CategoryModal
+                isOpen={isModalOpen}
+                isCreating={isCreating}
+                error={error instanceof Error ? error.message : null}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCreateCategory}
+            />
         </main>
     );
 };

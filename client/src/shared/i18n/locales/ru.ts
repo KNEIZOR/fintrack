@@ -7,6 +7,7 @@ export const ru = {
             delete: 'Удалить',
             create: 'Создать',
             edit: 'Редактировать',
+            close: 'Закрыть',
         },
 
         navigation: {
@@ -46,6 +47,15 @@ export const ru = {
             investment: 'Инвестиции',
 
             error: 'Не удалось загрузить счета',
+
+            addAccountDescription:
+                'Добавьте новый счёт для управления финансами',
+            accountName: 'Название счёта',
+            accountType: 'Тип счёта',
+
+            initialBalance: 'Начальный баланс',
+            creating: 'Создание...',
+            createAccount: 'Создать счёт',
         },
 
         categories: {
@@ -56,6 +66,12 @@ export const ru = {
             addCategory: 'Добавить категорию',
             noCategories: 'Категорий пока нет.',
             error: 'Не удалось загрузить категории',
+            addDescription: 'Добавить описание',
+            name: 'Название',
+            namePlaceholder: 'Введите название',
+            type: 'Тип',
+            creating: 'Создать',
+            deleteConfirmation: 'Вы уверены, что хотите удалить?',
         },
 
         language: {
@@ -71,40 +87,48 @@ export const ru = {
             password: 'Пароль',
             loginSubtitle: 'Войдите в свой аккаунт FinTrack',
             loginError: 'Не удалось войти',
-            logout: 'Выйти'
+            logout: 'Выйти',
         },
 
         transactions: {
             title: 'Транзакции',
-            subtitle: 'Управляйте своими доходами и расходами',
-
+            subtitle: 'Управляйте доходами и расходами',
             addTransaction: 'Добавить транзакцию',
+            addDescription: 'Добавьте новую финансовую операцию',
             history: 'История транзакций',
-
-            type: 'Тип',
+            historyDescription: 'Последние финансовые операции',
             income: 'Доход',
             expense: 'Расход',
-
+            amount: 'Сумма',
             account: 'Счёт',
             category: 'Категория',
-            amount: 'Сумма',
             description: 'Описание',
+            descriptionPlaceholder: 'На что была эта операция?',
             date: 'Дата',
-
             selectAccount: 'Выберите счёт',
             selectCategory: 'Выберите категорию',
-
-            descriptionPlaceholder: 'Зарплата',
-
             creating: 'Создание...',
-
             noTransactions: 'Транзакций пока нет.',
-            noDescription: 'Без описания',
-
             error: 'Не удалось загрузить транзакции',
-            createError: 'Не удалось создать транзакцию',
-
             invalidAmount: 'Сумма должна быть больше нуля',
+            createError: 'Не удалось создать транзакцию',
+        },
+
+        analytics: {
+            title: 'Аналитика',
+            subtitle: 'Обзор доходов и расходов',
+            noData: 'Пока нет данных для аналитики',
+            chartLabel: 'График финансовой аналитики',
+
+            income: 'Доходы',
+            expenses: 'Расходы',
+            net: 'Итог',
+
+            incomeByCategory: 'Доходы по категориям',
+            expensesByCategory: 'Расходы по категориям',
+
+            noIncome: 'Доходов пока нет',
+            noExpenses: 'Расходов пока нет',
         },
     },
 };

@@ -1,0 +1,279 @@
+.analytics {
+    margin-top: 24px;
+    padding: 24px;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.04);
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.title {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+.subtitle {
+    margin: 6px 0 0;
+
+    font-size: 14px;
+
+    color: #6b7280;
+}
+
+.chartWrapper {
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+}
+
+.chart {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+}
+
+.gridLine {
+    stroke: #e5e7eb;
+    stroke-width: 1;
+}
+
+.axisLabel {
+    fill: #9ca3af;
+    font-size: 11px;
+}
+
+.line {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.incomeLine {
+    stroke: #16a34a;
+}
+
+.expensesLine {
+    stroke: #dc2626;
+}
+
+.netLine {
+    stroke: #2563eb;
+}
+
+.incomePoint {
+    fill: #ffffff;
+    stroke: #16a34a;
+    stroke-width: 2;
+}
+
+.expensesPoint {
+    fill: #ffffff;
+    stroke: #dc2626;
+    stroke-width: 2;
+}
+
+.netPoint {
+    fill: #ffffff;
+    stroke: #2563eb;
+    stroke-width: 2;
+}
+
+.legend {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    margin-top: 20px;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.legendDot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+}
+
+.incomeDot {
+    background: #16a34a;
+}
+
+.expensesDot {
+    background: #dc2626;
+}
+
+.netDot {
+    background: #2563eb;
+}
+
+.empty {
+    min-height: 200px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+    .analytics {
+        padding: 20px 16px;
+    }
+
+    .chartWrapper {
+        height: 280px;
+    }
+
+    .legend {
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .analytics {
+        padding: 16px 12px;
+    }
+
+    .chartWrapper {
+        height: 240px;
+    }
+
+    .legend {
+        gap: 12px;
+    }
+
+    .legendItem {
+        font-size: 12px;
+    }
+}
+
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.categoryCard {
+    min-width: 0;
+
+    padding: 20px;
+
+    background: #f9fafb;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.categoryTitle {
+    margin: 0 0 16px;
+
+    color: #111827;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.categoryList {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.categoryRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.categoryRow:last-child {
+    border-bottom: none;
+}
+
+.categoryName {
+    min-width: 0;
+
+    overflow: hidden;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.categoryAmount {
+    flex-shrink: 0;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.incomeAmount {
+    color: #16a34a;
+}
+
+.expenseAmount {
+    color: #dc2626;
+}
+
+.categoryEmpty {
+    margin: 0;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .categoryGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .categoryCard {
+        padding: 16px;
+    }
+
+    .categoryRow {
+        gap: 10px;
+    }
+
+    .categoryName,
+    .categoryAmount {
+        font-size: 13px;
+    }
+}

@@ -1,19 +1,36 @@
 import type { Response } from 'express';
+
 import type { AuthRequest } from '../middleware/auth.middleware.js';
+
+import {
+    createTransactionSchema,
+    updateTransactionSchema,
+} from '../schemas/transaction.schema.js';
+
 import * as transactionService from '../services/transaction.service.js';
 
-export const createTransaction = async (req: AuthRequest, res: Response) => {
-    try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
+export const create = async (req: AuthRequest, res: Response) => {
+    if (!req.userId) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Authentication required',
+        });
+    }
 
+    const result = createTransactionSchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Validation failed',
+            errors: result.error.flatten().fieldErrors,
+        });
+    }
+
+    try {
         const transaction = await transactionService.createTransaction(
             req.userId,
-            req.body,
+            result.data,
         );
 
         return res.status(201).json({
@@ -23,26 +40,26 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
     } catch (error) {
         console.error(error);
 
-        const message =
-            error instanceof Error
-                ? error.message
-                : 'Failed to create transaction';
+        if (error instanceof Error) {
+            if (
+                error.message === 'Account not found' ||
+                error.message === 'Category not found'
+            ) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: error.message,
+                });
+            }
 
-        if (
-            message === 'Account not found' ||
-            message === 'Category not found'
-        ) {
-            return res.status(404).json({
-                status: 'error',
-                message,
-            });
-        }
-
-        if (message === 'Amount must be greater than zero') {
-            return res.status(400).json({
-                status: 'error',
-                message,
-            });
+            if (
+                error.message ===
+                'Category type does not match transaction type'
+            ) {
+                return res.status(409).json({
+                    status: 'error',
+                    message: error.message,
+                });
+            }
         }
 
         return res.status(500).json({
@@ -52,15 +69,15 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
     }
 };
 
-export const getTransactions = async (req: AuthRequest, res: Response) => {
-    try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
+export const getAll = async (req: AuthRequest, res: Response) => {
+    if (!req.userId) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Authentication required',
+        });
+    }
 
+    try {
         const transactions = await transactionService.getTransactions(
             req.userId,
         );
@@ -79,63 +96,32 @@ export const getTransactions = async (req: AuthRequest, res: Response) => {
     }
 };
 
-export const getTransactionById = async (req: AuthRequest, res: Response) => {
-    try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
-
-        const id = req.params.id;
-
-        if (typeof id !== 'string') {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Invalid transaction id',
-            });
-        }
-
-        const transaction = await transactionService.getTransactionById(
-            req.userId,
-            id,
-        );
-
-        if (!transaction) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Transaction not found',
-            });
-        }
-
-        return res.json({
-            status: 'ok',
-            transaction,
-        });
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
+export const update = async (
+    req: AuthRequest<{ id: string }>,
+    res: Response,
+) => {
+    if (!req.userId) {
+        return res.status(401).json({
             status: 'error',
-            message: 'Failed to get transaction',
+            message: 'Authentication required',
         });
     }
-};
 
-export const updateTransaction = async (req: AuthRequest, res: Response) => {
+    const result = updateTransactionSchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Validation failed',
+            errors: result.error.flatten().fieldErrors,
+        });
+    }
+
     try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
-
         const transaction = await transactionService.updateTransaction(
             req.userId,
-            String(req.params.id),
-            req.body,
+            req.params.id,
+            result.data,
         );
 
         return res.json({
@@ -145,27 +131,27 @@ export const updateTransaction = async (req: AuthRequest, res: Response) => {
     } catch (error) {
         console.error(error);
 
-        const message =
-            error instanceof Error
-                ? error.message
-                : 'Failed to update transaction';
+        if (error instanceof Error) {
+            if (
+                error.message === 'Transaction not found' ||
+                error.message === 'Account not found' ||
+                error.message === 'Category not found'
+            ) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: error.message,
+                });
+            }
 
-        if (
-            message === 'Transaction not found' ||
-            message === 'Account not found' ||
-            message === 'Category not found'
-        ) {
-            return res.status(404).json({
-                status: 'error',
-                message,
-            });
-        }
-
-        if (message === 'Amount must be greater than zero') {
-            return res.status(400).json({
-                status: 'error',
-                message,
-            });
+            if (
+                error.message ===
+                'Category type does not match transaction type'
+            ) {
+                return res.status(409).json({
+                    status: 'error',
+                    message: error.message,
+                });
+            }
         }
 
         return res.status(500).json({
@@ -175,33 +161,35 @@ export const updateTransaction = async (req: AuthRequest, res: Response) => {
     }
 };
 
-export const deleteTransaction = async (req: AuthRequest, res: Response) => {
+export const remove = async (
+    req: AuthRequest<{ id: string }>,
+    res: Response,
+) => {
+    if (!req.userId) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Authentication required',
+        });
+    }
+
     try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
+        await transactionService.deleteTransaction(req.userId, req.params.id);
 
-        const deleted = await transactionService.deleteTransaction(
-            req.userId,
-            String(req.params.id),
-        );
+        return res.json({
+            status: 'ok',
+        });
+    } catch (error) {
+        console.error(error);
 
-        if (!deleted) {
+        if (
+            error instanceof Error &&
+            error.message === 'Transaction not found'
+        ) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Transaction not found',
             });
         }
-
-        return res.json({
-            status: 'ok',
-            message: 'Transaction deleted',
-        });
-    } catch (error) {
-        console.error(error);
 
         return res.status(500).json({
             status: 'error',

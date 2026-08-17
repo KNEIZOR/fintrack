@@ -1,8 +1,13 @@
 import { Router } from 'express';
 
-import { create, getAll } from '../controllers/account.controller.js';
-
 import { authMiddleware } from '../middleware/auth.middleware.js';
+
+import {
+    create,
+    deleteAccount,
+    getAll,
+    updateAccount,
+} from '../controllers/account.controller.js';
 
 const router = Router();
 
@@ -11,5 +16,9 @@ router.use(authMiddleware);
 router.post('/', create);
 
 router.get('/', getAll);
+
+router.delete('/:id', deleteAccount);
+
+router.patch('/:id', updateAccount);
 
 export default router;

@@ -1,59 +1,51 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { getDashboard, type DashboardData } from '@/api/dashboard.api';
-
-import { getAnalytics } from '@/api/analytics.api';
 
 import { BalanceCard } from '@/widgets/dashboard/ui/BalanceCard';
 import { StatCard } from '@/widgets/dashboard/ui/StatCard';
 import { RecentTransactions } from '@/widgets/dashboard/ui/RecentTransactions';
+
 import { DashboardSkeleton } from './DashboardSkeleton/DashboardSkeleton';
+import { useDashboard } from '../model/useDashboard';
+import { useAnalytics } from '../model/useAnalytics';
 
 import styles from './DashboardPage.module.scss';
+
+const AnalyticsSection = lazy(
+    () => import('./AnalyticsSection/AnalyticsSection'),
+);
 
 export const DashboardPage = () => {
     const { t } = useTranslation();
 
-    const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+    const {
+        dashboard,
+        isLoading: isDashboardLoading,
+        error: dashboardError,
+    } = useDashboard();
 
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        analytics,
+        isLoading: isAnalyticsLoading,
+        error: analyticsError,
+    } = useAnalytics();
 
-    const [error, setError] = useState<string | null>(null);
+    const isLoading = isDashboardLoading || isAnalyticsLoading;
 
-    useEffect(() => {
-        const loadDashboard = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
-
-                const [dashboardData, analyticsData] = await Promise.all([
-                    getDashboard(),
-                    getAnalytics(),
-                ]);
-
-                console.log('Dashboard:', dashboardData);
-                console.log('Analytics:', analyticsData);
-
-                setDashboard(dashboardData);
-            } catch (error) {
-                console.error(error);
-
-                setError('Failed to load dashboard');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadDashboard();
-    }, []);
+    const error = dashboardError ?? analyticsError;
 
     if (isLoading) {
         return <DashboardSkeleton />;
     }
 
     if (error) {
-        return <div className={styles.error}>{t('dashboard.error')}</div>;
+        return (
+            <main className={styles.dashboard}>
+                <div className={styles.container}>
+                    <div className={styles.error}>{t('dashboard.error')}</div>
+                </div>
+            </main>
+        );
     }
 
     if (!dashboard) {
@@ -103,6 +95,18 @@ export const DashboardPage = () => {
                         transactions={dashboard.recentTransactions}
                     />
                 </div>
+
+                {analytics && (
+                    <Suspense
+                        fallback={
+                            <div className={styles.analyticsLoading}>
+                                {t('common.loading')}
+                            </div>
+                        }
+                    >
+                        <AnalyticsSection analytics={analytics} />
+                    </Suspense>
+                )}
             </div>
         </main>
     );

@@ -1,40 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getAccounts, type Account } from '@/api/accounts.api';
+import type {
+    Account,
+    CreateAccountInput,
+    UpdateAccountInput,
+} from '@/api/accounts.api';
+
 import { AccountCard } from '@/widgets/accounts/AccountCard';
 
 import { AccountsSkeleton } from './AccountsSkeleton/AccountsSkeleton';
+import { AccountModal } from './AccountModal/AccountModal';
+
+import { useAccounts } from '../model/useAccounts';
 
 import styles from './AccountsPage.module.scss';
 
 export const AccountsPage = () => {
     const { t } = useTranslation();
 
-    const [accounts, setAccounts] = useState<Account[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const {
+        accounts,
+        isLoading,
+        error,
 
-    useEffect(() => {
-        const loadAccounts = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
+        createAccount,
+        isCreating,
+        createError,
 
-                const data = await getAccounts();
+        deleteAccount,
+        isDeleting,
+        deleteError,
 
-                setAccounts(data);
-            } catch (error) {
-                console.error(error);
+        updateAccount,
+        isUpdating,
+        updateError,
+    } = useAccounts();
 
-                setError(t('accounts.error'));
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadAccounts();
-    }, [t]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingAccount, setEditingAccount] = useState<Account | null>(null);
 
     if (isLoading) {
         return <AccountsSkeleton />;
@@ -44,11 +48,73 @@ export const AccountsPage = () => {
         return (
             <main className={styles.accounts}>
                 <div className={styles.container}>
-                    <div className={styles.error}>{error}</div>
+                    <div className={styles.error}>{t('accounts.error')}</div>
                 </div>
             </main>
         );
     }
+
+    const handleOpenCreate = () => {
+        setEditingAccount(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEditAccount = (account: Account) => {
+        setEditingAccount(account);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditingAccount(null);
+    };
+
+    const handleCreateAccount = async (data: CreateAccountInput) => {
+        try {
+            await createAccount(data);
+
+            handleCloseModal();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleUpdateAccount = async (data: UpdateAccountInput) => {
+        if (!editingAccount) {
+            return;
+        }
+
+        try {
+            await updateAccount({
+                id: editingAccount.id,
+                data,
+            });
+
+            handleCloseModal();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleDeleteAccount = async (id: string) => {
+        try {
+            await deleteAccount(id);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleSubmit = async (
+        data: CreateAccountInput | UpdateAccountInput,
+    ) => {
+        if (editingAccount) {
+            await handleUpdateAccount(data as UpdateAccountInput);
+        } else {
+            await handleCreateAccount(data as CreateAccountInput);
+        }
+    };
+
+    const mutationError = createError ?? updateError ?? deleteError;
 
     return (
         <main className={styles.accounts}>
@@ -62,12 +128,22 @@ export const AccountsPage = () => {
                         </p>
                     </div>
 
-                    <button type="button" className={styles.addButton}>
+                    <button
+                        type="button"
+                        className={styles.addButton}
+                        onClick={handleOpenCreate}
+                    >
                         {t('accounts.addAccount')}
                     </button>
                 </header>
 
-                <section className={styles.section}>
+                {mutationError && (
+                    <div className={styles.error} role="alert">
+                        {mutationError.message}
+                    </div>
+                )}
+
+                <section>
                     <h2 className={styles.sectionTitle}>
                         {t('accounts.yourAccounts')}
                     </h2>
@@ -82,12 +158,25 @@ export const AccountsPage = () => {
                                 <AccountCard
                                     key={account.id}
                                     account={account}
+                                    onEdit={handleEditAccount}
+                                    onDelete={handleDeleteAccount}
+                                    isDeleting={isDeleting}
                                 />
                             ))}
                         </div>
                     )}
                 </section>
             </div>
+
+            <AccountModal
+                key={editingAccount?.id ?? 'create'}
+                isOpen={isModalOpen}
+                isCreating={isCreating || isUpdating}
+                error={createError ?? updateError}
+                account={editingAccount}
+                onClose={handleCloseModal}
+                onSubmit={handleSubmit}
+            />
         </main>
     );
 };

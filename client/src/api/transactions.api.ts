@@ -1,25 +1,21 @@
+import { apiClient } from '@/shared/api';
+
 export type TransactionType = 'INCOME' | 'EXPENSE';
-
-export interface TransactionAccount {
-    id: string;
-    name: string;
-    currency: string;
-}
-
-export interface TransactionCategory {
-    id: string;
-    name: string;
-    type: TransactionType;
-}
 
 export interface Transaction {
     id: string;
+    userId: string;
+    accountId: string;
+    categoryId: string;
+
     type: TransactionType;
-    amount: string;
+
+    amount: number;
     description: string | null;
     date: string;
-    account: TransactionAccount;
-    category: TransactionCategory;
+
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface TransactionsResponse {
@@ -27,21 +23,7 @@ interface TransactionsResponse {
     transactions: Transaction[];
 }
 
-export const getTransactions = async (): Promise<Transaction[]> => {
-    const response = await fetch('http://localhost:4000/api/transactions', {
-        credentials: 'include',
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to load transactions');
-    }
-
-    const data: TransactionsResponse = await response.json();
-
-    return data.transactions;
-};
-
-interface CreateTransactionResponse {
+interface TransactionResponse {
     status: string;
     transaction: Transaction;
 }
@@ -55,25 +37,27 @@ export interface CreateTransactionInput {
     date: string;
 }
 
+export const getTransactions = async (): Promise<Transaction[]> => {
+    const data = await apiClient<TransactionsResponse>('/api/transactions');
+
+    return data.transactions;
+};
+
 export const createTransaction = async (
     data: CreateTransactionInput,
 ): Promise<Transaction> => {
-    const response = await fetch('http://localhost:4000/api/transactions', {
+    const response = await apiClient<TransactionResponse>('/api/transactions', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
+        body: data,
     });
 
-    const result: CreateTransactionResponse & {
-        message?: string;
-    } = await response.json();
+    return response.transaction;
+};
 
-    if (!response.ok) {
-        throw new Error(result.message || 'Failed to create transaction');
-    }
-
-    return result.transaction;
+export const deleteTransaction = async (
+    id: string,
+): Promise<void> => {
+    await apiClient(`/api/transactions/${id}`, {
+        method: 'DELETE',
+    });
 };

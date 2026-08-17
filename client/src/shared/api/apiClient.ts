@@ -6,6 +6,12 @@ interface ApiRequestOptions {
     body?: unknown;
 }
 
+interface ApiErrorResponse {
+    status?: string;
+    message?: string;
+    errors?: Record<string, string[]>;
+}
+
 export const apiClient = async <T>(
     endpoint: string,
     options: ApiRequestOptions = {},
@@ -28,9 +34,27 @@ export const apiClient = async <T>(
         let message = 'Something went wrong';
 
         try {
-            const data = await response.json();
+            const data: ApiErrorResponse = await response.json();
 
-            message = data.message || message;
+            console.error('API error:', {
+                endpoint,
+                status: response.status,
+                data,
+            });
+
+            if (data.errors) {
+                const validationErrors = Object.entries(data.errors)
+                    .flatMap(([field, messages]) =>
+                        messages.map(
+                            (errorMessage) => `${field}: ${errorMessage}`,
+                        ),
+                    )
+                    .join(', ');
+
+                message = validationErrors || data.message || message;
+            } else {
+                message = data.message || message;
+            }
         } catch {
             // Response does not contain JSON
         }

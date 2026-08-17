@@ -7,7 +7,12 @@ if (!JWT_SECRET) {
     throw new Error('JWT_SECRET is not defined');
 }
 
-export interface AuthRequest extends Request {
+export interface AuthRequest<
+    Params = Record<string, string>,
+    ResBody = unknown,
+    ReqBody = unknown,
+    ReqQuery = Record<string, string>,
+> extends Request<Params, ResBody, ReqBody, ReqQuery> {
     userId?: string;
 }
 

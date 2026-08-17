@@ -1,9 +1,11 @@
 import {
     Banknote,
     Landmark,
+    Pencil,
     PiggyBank,
     TrendingUp,
     Wallet,
+    Trash2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +15,9 @@ import styles from './AccountCard.module.scss';
 
 interface AccountCardProps {
     account: Account;
+    onEdit: (account: Account) => void;
+    onDelete: (id: string) => void;
+    isDeleting: boolean;
 }
 
 const accountIcons = {
@@ -28,7 +33,12 @@ const isAccountType = (type: string): type is AccountType => {
     return type in accountIcons;
 };
 
-export const AccountCard = ({ account }: AccountCardProps) => {
+export const AccountCard = ({
+    account,
+    onEdit,
+    onDelete,
+    isDeleting = false,
+}: AccountCardProps) => {
     const { t } = useTranslation();
 
     const Icon = isAccountType(account.type)
@@ -46,6 +56,28 @@ export const AccountCard = ({ account }: AccountCardProps) => {
         ? t(`accounts.${account.type.toLowerCase()}`)
         : account.type;
 
+    const handleEdit = () => {
+        if (isDeleting) {
+            return;
+        }
+
+        onEdit(account);
+    };
+
+    const handleDelete = () => {
+        if (isDeleting) {
+            return;
+        }
+
+        const confirmed = window.confirm(t('accounts.deleteConfirmation'));
+
+        if (!confirmed) {
+            return;
+        }
+
+        onDelete(account.id);
+    };
+
     return (
         <article className={styles.card}>
             <div className={styles.top}>
@@ -54,6 +86,28 @@ export const AccountCard = ({ account }: AccountCardProps) => {
                 </div>
 
                 <span className={styles.type}>{typeLabel}</span>
+
+                <div className={styles.actions}>
+                    <button
+                        type="button"
+                        className={styles.editButton}
+                        onClick={handleEdit}
+                        disabled={isDeleting}
+                        aria-label={t('accounts.edit')}
+                    >
+                        <Pencil size={17} />
+                    </button>
+
+                    <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        aria-label={t('accounts.delete')}
+                    >
+                        <Trash2 size={17} />
+                    </button>
+                </div>
             </div>
 
             <div className={styles.content}>

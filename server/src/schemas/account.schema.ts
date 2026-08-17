@@ -1,20 +1,18 @@
 import { z } from 'zod';
 
 export const createAccountSchema = z.object({
-    name: z
-        .string()
-        .trim()
-        .min(2, 'Name must contain at least 2 characters')
-        .max(50, 'Name must contain at most 50 characters'),
-
+    name: z.string().min(1).max(100),
     type: z.enum(['BANK', 'CASH', 'SAVINGS', 'INVESTMENT']),
+    currency: z.string().min(3).max(3),
+    balance: z.number().nonnegative(),
+});
 
-    currency: z
-        .string()
-        .length(3, 'Currency must contain 3 characters')
-        .transform((value) => value.toUpperCase()),
-
-    balance: z.number().finite().default(0),
+export const updateAccountSchema = z.object({
+    name: z.string().min(1),
+    type: z.enum(['BANK', 'CASH', 'SAVINGS', 'INVESTMENT']),
+    currency: z.string().min(1),
+    balance: z.number(),
 });
 
 export type CreateAccountInput = z.infer<typeof createAccountSchema>;
+export type UpdateAccountInput = z.infer<typeof updateAccountSchema>;

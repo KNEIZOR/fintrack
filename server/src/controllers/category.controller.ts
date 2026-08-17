@@ -78,10 +78,18 @@ export const deleteCategory = async (req: AuthRequest, res: Response) => {
             id,
         );
 
-        if (result.count === 0) {
+        if (result.reason === 'NOT_FOUND') {
             return res.status(404).json({
                 status: 'error',
                 message: 'Category not found',
+            });
+        }
+
+        if (result.reason === 'HAS_TRANSACTIONS') {
+            return res.status(409).json({
+                status: 'error',
+                message:
+                    'Category cannot be deleted because it is used by transactions',
             });
         }
 

@@ -30,14 +30,43 @@ export const getCategories = async (userId: string) => {
     });
 };
 
-export const deleteCategory = async (
-    userId: string,
-    categoryId: string,
-) => {
-    return prisma.category.deleteMany({
+export const deleteCategory = async (userId: string, categoryId: string) => {
+    const category = await prisma.category.findFirst({
         where: {
             id: categoryId,
             userId,
         },
     });
+
+    if (!category) {
+        return {
+            deleted: false,
+            reason: 'NOT_FOUND' as const,
+        };
+    }
+
+    const transactionCount = await prisma.transaction.count({
+        where: {
+            categoryId,
+            userId,
+        },
+    });
+
+    if (transactionCount > 0) {
+        return {
+            deleted: false,
+            reason: 'HAS_TRANSACTIONS' as const,
+            transactionCount,
+        };
+    }
+
+    await prisma.category.delete({
+        where: {
+            id: categoryId,
+        },
+    });
+
+    return {
+        deleted: true,
+    };
 };
