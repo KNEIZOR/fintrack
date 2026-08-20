@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { CreateCategoryInput } from '@/api/categories.api';
+import type {
+    Category,
+    CreateCategoryInput,
+    UpdateCategoryInput,
+} from '@/api/categories.api';
 
 import { CategoryCard } from '@/widgets/categories/CategoryCard';
 
+import { useCategories } from '../model/useCategories';
+
 import { CategoriesSkeleton } from './CategoriesSkeleton/CategoriesSkeleton';
 import { CategoryModal } from './CategoryModal/CategoryModal';
-import { useCategories } from '../model/useCategories';
 
 import styles from './CategoriesPage.module.scss';
 
@@ -18,35 +23,105 @@ export const CategoriesPage = () => {
         categories,
         isLoading,
         error,
-        isCreating,
-        isDeleting,
+
         createCategory,
+        isCreating,
+        createError,
+
+        updateCategory,
+        isUpdating,
+        updateError,
+
         deleteCategory,
+        isDeleting,
+        deleteError,
     } = useCategories();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleCreateCategory = async (data: CreateCategoryInput) => {
-        try {
-            await createCategory(data);
-
-            setIsModalOpen(false);
-        } catch {
-            // Ошибка уже доступна через mutation.error
-        }
-    };
+    const [editingCategory, setEditingCategory] = useState<Category | null>(
+        null,
+    );
 
     if (isLoading) {
         return <CategoriesSkeleton />;
     }
 
-    const incomeCategories = categories.filter(
-        (category) => category.type === 'INCOME',
-    );
+    if (error) {
+        return (
+            <main className={styles.categories}>
+                <div className={styles.container}>
+                    <div className={styles.error} role="alert">
+                        {t('categories.error')}
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
-    const expenseCategories = categories.filter(
-        (category) => category.type === 'EXPENSE',
-    );
+    const handleOpenCreate = () => {
+        setEditingCategory(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEditCategory = (category: Category) => {
+        setEditingCategory(category);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditingCategory(null);
+    };
+
+    const handleCreateCategory = async (data: CreateCategoryInput) => {
+        try {
+            await createCategory(data);
+
+            handleCloseModal();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleUpdateCategory = async (data: UpdateCategoryInput) => {
+        if (!editingCategory) {
+            return;
+        }
+
+        try {
+            await updateCategory({
+                id: editingCategory.id,
+                data,
+            });
+
+            handleCloseModal();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleDeleteCategory = async (id: string) => {
+        try {
+            await deleteCategory(id);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleSubmit = async (
+        data: CreateCategoryInput | UpdateCategoryInput,
+    ) => {
+        if (editingCategory) {
+            await handleUpdateCategory(data as UpdateCategoryInput);
+
+            return;
+        }
+
+        await handleCreateCategory(data as CreateCategoryInput);
+    };
+
+    const mutationError = createError ?? updateError ?? deleteError;
 
     return (
         <main className={styles.categories}>
@@ -65,59 +140,35 @@ export const CategoriesPage = () => {
                     <button
                         type="button"
                         className={styles.addButton}
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={handleOpenCreate}
                     >
                         {t('categories.addCategory')}
                     </button>
                 </header>
 
-                {error && (
+                {mutationError && (
                     <div className={styles.error} role="alert">
-                        {error instanceof Error
-                            ? error.message
-                            : t('categories.error')}
+                        {mutationError.message}
                     </div>
                 )}
 
-                <section className={styles.section}>
+                <section>
                     <h2 className={styles.sectionTitle}>
-                        {t('categories.income')}
+                        {t('categories.yourCategories')}
                     </h2>
 
-                    {incomeCategories.length === 0 ? (
+                    {categories.length === 0 ? (
                         <p className={styles.empty}>
                             {t('categories.noCategories')}
                         </p>
                     ) : (
                         <div className={styles.grid}>
-                            {incomeCategories.map((category) => (
+                            {categories.map((category) => (
                                 <CategoryCard
                                     key={category.id}
                                     category={category}
-                                    onDelete={deleteCategory}
-                                    isDeleting={isDeleting}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </section>
-
-                <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        {t('categories.expenses')}
-                    </h2>
-
-                    {expenseCategories.length === 0 ? (
-                        <p className={styles.empty}>
-                            {t('categories.noCategories')}
-                        </p>
-                    ) : (
-                        <div className={styles.grid}>
-                            {expenseCategories.map((category) => (
-                                <CategoryCard
-                                    key={category.id}
-                                    category={category}
-                                    onDelete={deleteCategory}
+                                    onEdit={handleEditCategory}
+                                    onDelete={handleDeleteCategory}
                                     isDeleting={isDeleting}
                                 />
                             ))}
@@ -127,11 +178,13 @@ export const CategoriesPage = () => {
             </div>
 
             <CategoryModal
+                key={editingCategory?.id ?? 'create'}
                 isOpen={isModalOpen}
-                isCreating={isCreating}
-                error={error instanceof Error ? error.message : null}
-                onClose={() => setIsModalOpen(false)}
-                onSubmit={handleCreateCategory}
+                isSubmitting={isCreating || isUpdating}
+                error={createError ?? updateError}
+                category={editingCategory}
+                onClose={handleCloseModal}
+                onSubmit={handleSubmit}
             />
         </main>
     );

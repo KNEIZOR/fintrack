@@ -1,127 +1,195 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { type FormEvent, useState } from 'react';
+import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import type {
+    CreateTransactionInput,
+    Transaction,
+    TransactionType,
+    UpdateTransactionInput,
+} from '@/api/transactions.api';
 
 import type { Account } from '@/api/accounts.api';
 import type { Category } from '@/api/categories.api';
-import {
-    createTransactionSchema,
-    type CreateTransactionFormValues,
-} from '@/features/transactions/model/transaction.schema';
 
 import styles from './TransactionModal.module.scss';
 
 interface TransactionModalProps {
     isOpen: boolean;
+    transaction: Transaction | null;
+
     accounts: Account[];
     categories: Category[];
-    isCreating: boolean;
-    error: string | null;
+
+    isSubmitting: boolean;
+    error: Error | null;
+
     onClose: () => void;
-    onSubmit: (data: CreateTransactionFormValues) => Promise<void>;
+
+    onSubmit: (
+        data: CreateTransactionInput | UpdateTransactionInput,
+    ) => Promise<void>;
 }
 
 export const TransactionModal = ({
     isOpen,
+    transaction,
     accounts,
     categories,
-    isCreating,
+    isSubmitting,
     error,
     onClose,
     onSubmit,
 }: TransactionModalProps) => {
     const { t } = useTranslation();
 
-    const {
-        register,
-        handleSubmit,
-        watch,
-        reset,
-        formState: { errors },
-    } = useForm<CreateTransactionFormValues>({
-        resolver: zodResolver(createTransactionSchema),
+    const isEditing = Boolean(transaction);
 
-        defaultValues: {
-            type: 'EXPENSE',
-            accountId: '',
-            categoryId: '',
-            amount: 0,
-            description: '',
-            date: new Date().toISOString().slice(0, 10),
-        },
-    });
-
-    const type = watch('type');
-
-    const filteredCategories = categories.filter(
-        (category) => category.type === type,
+    const [type, setType] = useState<TransactionType>(
+        transaction?.type ?? 'EXPENSE',
     );
 
-    useEffect(() => {
-        if (!isOpen) {
-            reset();
-        }
-    }, [isOpen, reset]);
+    const [accountId, setAccountId] = useState(
+        transaction?.accountId ?? accounts[0]?.id ?? '',
+    );
+
+    const [categoryId, setCategoryId] = useState(transaction?.categoryId ?? '');
+
+    const [amount, setAmount] = useState(
+        transaction?.amount !== undefined ? String(transaction.amount) : '',
+    );
+
+    const [description, setDescription] = useState(
+        transaction?.description ?? '',
+    );
+
+    const [date, setDate] = useState(
+        transaction
+            ? transaction.date.slice(0, 10)
+            : new Date().toISOString().slice(0, 10),
+    );
 
     if (!isOpen) {
         return null;
     }
 
-    const submit = async (data: CreateTransactionFormValues) => {
-        await onSubmit(data);
-        reset();
+    const filteredCategories = categories.filter(
+        (category) => category.type === type,
+    );
+
+    const handleTypeChange = (newType: TransactionType) => {
+        setType(newType);
+
+        const currentCategoryBelongsToType = categories.some(
+            (category) =>
+                category.id === categoryId && category.type === newType,
+        );
+
+        if (!currentCategoryBelongsToType) {
+            const firstCategory = categories.find(
+                (category) => category.type === newType,
+            );
+
+            setCategoryId(firstCategory?.id ?? '');
+        }
+    };
+
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!accountId || !categoryId || !amount || !date) {
+            return;
+        }
+
+        const numericAmount = Number(amount);
+
+        if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+            return;
+        }
+
+        await onSubmit({
+            accountId,
+            categoryId,
+            type,
+            amount: numericAmount,
+            description: description.trim() || undefined,
+            date,
+        });
     };
 
     return (
-        <div className={styles.overlay} onMouseDown={onClose}>
+        <div
+            className={styles.overlay}
+            onMouseDown={onClose}
+            role="presentation"
+        >
             <div
                 className={styles.modal}
                 onMouseDown={(event) => event.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="transaction-modal-title"
             >
-                <div className={styles.header}>
+                <header className={styles.header}>
                     <div>
-                        <h2 className={styles.title}>
-                            {t('transactions.createTitle')}
+                        <h2
+                            id="transaction-modal-title"
+                            className={styles.title}
+                        >
+                            {isEditing
+                                ? t('transactions.editTransaction')
+                                : t('transactions.addTransaction')}
                         </h2>
 
                         <p className={styles.subtitle}>
-                            {t('transactions.createSubtitle')}
+                            {isEditing
+                                ? t('transactions.editTransactionDescription')
+                                : t('transactions.addTransactionDescription')}
                         </p>
                     </div>
 
                     <button
                         type="button"
-                        className={styles.closeButton}
+                        className={styles.close}
                         onClick={onClose}
-                        disabled={isCreating}
+                        disabled={isSubmitting}
                         aria-label={t('common.close')}
                     >
-                        ×
+                        <X size={20} />
                     </button>
-                </div>
+                </header>
 
-                <form className={styles.form} onSubmit={handleSubmit(submit)}>
-                    <div className={styles.field}>
-                        <label htmlFor="transaction-type">
-                            {t('transactions.type')}
-                        </label>
+                <form
+                    className={styles.form}
+                    onSubmit={handleSubmit}
+                    noValidate
+                >
+                    <div className={styles.typeSwitcher}>
+                        <button
+                            type="button"
+                            className={
+                                type === 'EXPENSE'
+                                    ? styles.activeExpense
+                                    : styles.typeButton
+                            }
+                            onClick={() => handleTypeChange('EXPENSE')}
+                            disabled={isSubmitting}
+                        >
+                            {t('transactions.expense')}
+                        </button>
 
-                        <select id="transaction-type" {...register('type')}>
-                            <option value="EXPENSE">
-                                {t('transactions.expense')}
-                            </option>
-
-                            <option value="INCOME">
-                                {t('transactions.income')}
-                            </option>
-                        </select>
-
-                        {errors.type && (
-                            <span className={styles.error}>
-                                {errors.type.message}
-                            </span>
-                        )}
+                        <button
+                            type="button"
+                            className={
+                                type === 'INCOME'
+                                    ? styles.activeIncome
+                                    : styles.typeButton
+                            }
+                            onClick={() => handleTypeChange('INCOME')}
+                            disabled={isSubmitting}
+                        >
+                            {t('transactions.income')}
+                        </button>
                     </div>
 
                     <div className={styles.field}>
@@ -131,7 +199,12 @@ export const TransactionModal = ({
 
                         <select
                             id="transaction-account"
-                            {...register('accountId')}
+                            value={accountId}
+                            onChange={(event) =>
+                                setAccountId(event.target.value)
+                            }
+                            required
+                            disabled={isSubmitting}
                         >
                             <option value="">
                                 {t('transactions.selectAccount')}
@@ -143,12 +216,6 @@ export const TransactionModal = ({
                                 </option>
                             ))}
                         </select>
-
-                        {errors.accountId && (
-                            <span className={styles.error}>
-                                {errors.accountId.message}
-                            </span>
-                        )}
                     </div>
 
                     <div className={styles.field}>
@@ -158,7 +225,14 @@ export const TransactionModal = ({
 
                         <select
                             id="transaction-category"
-                            {...register('categoryId')}
+                            value={categoryId}
+                            onChange={(event) =>
+                                setCategoryId(event.target.value)
+                            }
+                            required
+                            disabled={
+                                isSubmitting || filteredCategories.length === 0
+                            }
                         >
                             <option value="">
                                 {t('transactions.selectCategory')}
@@ -170,53 +244,44 @@ export const TransactionModal = ({
                                 </option>
                             ))}
                         </select>
-
-                        {errors.categoryId && (
-                            <span className={styles.error}>
-                                {errors.categoryId.message}
-                            </span>
-                        )}
                     </div>
 
-                    <div className={styles.field}>
-                        <label htmlFor="transaction-amount">
-                            {t('transactions.amount')}
-                        </label>
+                    <div className={styles.row}>
+                        <div className={styles.field}>
+                            <label htmlFor="transaction-amount">
+                                {t('transactions.amount')}
+                            </label>
 
-                        <input
-                            id="transaction-amount"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="0.00"
-                            {...register('amount', {
-                                valueAsNumber: true,
-                            })}
-                        />
+                            <input
+                                id="transaction-amount"
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                value={amount}
+                                onChange={(event) =>
+                                    setAmount(event.target.value)
+                                }
+                                required
+                                disabled={isSubmitting}
+                            />
+                        </div>
 
-                        {errors.amount && (
-                            <span className={styles.error}>
-                                {errors.amount.message}
-                            </span>
-                        )}
-                    </div>
+                        <div className={styles.field}>
+                            <label htmlFor="transaction-date">
+                                {t('transactions.date')}
+                            </label>
 
-                    <div className={styles.field}>
-                        <label htmlFor="transaction-date">
-                            {t('transactions.date')}
-                        </label>
-
-                        <input
-                            id="transaction-date"
-                            type="date"
-                            {...register('date')}
-                        />
-
-                        {errors.date && (
-                            <span className={styles.error}>
-                                {errors.date.message}
-                            </span>
-                        )}
+                            <input
+                                id="transaction-date"
+                                type="date"
+                                value={date}
+                                onChange={(event) =>
+                                    setDate(event.target.value)
+                                }
+                                required
+                                disabled={isSubmitting}
+                            />
+                        </div>
                     </div>
 
                     <div className={styles.field}>
@@ -226,44 +291,53 @@ export const TransactionModal = ({
 
                         <textarea
                             id="transaction-description"
+                            value={description}
+                            onChange={(event) =>
+                                setDescription(event.target.value)
+                            }
+                            maxLength={255}
                             rows={3}
                             placeholder={t(
                                 'transactions.descriptionPlaceholder',
                             )}
-                            {...register('description')}
+                            disabled={isSubmitting}
                         />
-
-                        {errors.description && (
-                            <span className={styles.error}>
-                                {errors.description.message}
-                            </span>
-                        )}
                     </div>
 
                     {error && (
-                        <div className={styles.serverError} role="alert">
-                            {error}
+                        <div className={styles.error} role="alert">
+                            {error.message}
                         </div>
                     )}
 
                     <div className={styles.actions}>
                         <button
                             type="button"
-                            className={styles.cancelButton}
+                            className={styles.cancel}
                             onClick={onClose}
-                            disabled={isCreating}
+                            disabled={isSubmitting}
                         >
                             {t('common.cancel')}
                         </button>
 
                         <button
                             type="submit"
-                            className={styles.submitButton}
-                            disabled={isCreating}
+                            className={styles.submit}
+                            disabled={
+                                isSubmitting ||
+                                !accountId ||
+                                !categoryId ||
+                                !amount ||
+                                !date
+                            }
                         >
-                            {isCreating
-                                ? t('common.saving')
-                                : t('transactions.create')}
+                            {isSubmitting
+                                ? isEditing
+                                    ? t('transactions.updating')
+                                    : t('transactions.creating')
+                                : isEditing
+                                  ? t('transactions.saveChanges')
+                                  : t('transactions.createTransaction')}
                         </button>
                     </div>
                 </form>

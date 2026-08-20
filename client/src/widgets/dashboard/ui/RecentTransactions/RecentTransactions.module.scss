@@ -26,16 +26,45 @@
 }
 
 .item {
+    width: 100%;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     padding: 14px 0;
 
+    border: none;
     border-bottom: 1px solid #f1f5f9;
+
+    background: transparent;
+
+    color: inherit;
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        padding 0.2s ease;
 
     &:last-child {
         border-bottom: none;
+    }
+
+    &:hover {
+        background: #f8fafc;
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(59, 130, 246, 0.2);
+        outline-offset: 2px;
+        border-radius: 8px;
+    }
+
+    &:active {
+        background: #f1f5f9;
     }
 }
 

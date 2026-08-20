@@ -1,19 +1,36 @@
 import type { Response } from 'express';
+
 import type { AuthRequest } from '../middleware/auth.middleware.js';
+
+import {
+    createCategorySchema,
+    updateCategorySchema,
+} from '../schemas/category.schema.js';
+
 import * as categoryService from '../services/category.service.js';
 
 export const createCategory = async (req: AuthRequest, res: Response) => {
-    try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
+    if (!req.userId) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Authentication required',
+        });
+    }
 
+    const result = createCategorySchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Validation failed',
+            errors: result.error.flatten().fieldErrors,
+        });
+    }
+
+    try {
         const category = await categoryService.createCategory(
             req.userId,
-            req.body,
+            result.data,
         );
 
         return res.status(201).json({
@@ -23,6 +40,17 @@ export const createCategory = async (req: AuthRequest, res: Response) => {
     } catch (error) {
         console.error(error);
 
+        if (
+            error instanceof Error &&
+            error.message ===
+                'Category name already exists for this transaction type'
+        ) {
+            return res.status(409).json({
+                status: 'error',
+                message: error.message,
+            });
+        }
+
         return res.status(500).json({
             status: 'error',
             message: 'Failed to create category',
@@ -31,14 +59,14 @@ export const createCategory = async (req: AuthRequest, res: Response) => {
 };
 
 export const getCategories = async (req: AuthRequest, res: Response) => {
-    try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
+    if (!req.userId) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Authentication required',
+        });
+    }
 
+    try {
         const categories = await categoryService.getCategories(req.userId);
 
         return res.json({
@@ -55,28 +83,97 @@ export const getCategories = async (req: AuthRequest, res: Response) => {
     }
 };
 
-export const deleteCategory = async (req: AuthRequest, res: Response) => {
+export const update = async (
+    req: AuthRequest<{ id: string }>,
+    res: Response,
+) => {
+    if (!req.userId) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Authentication required',
+        });
+    }
+
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Invalid category id',
+        });
+    }
+
+    const result = updateCategorySchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Validation failed',
+            errors: result.error.flatten().fieldErrors,
+        });
+    }
+
     try {
-        if (!req.userId) {
-            return res.status(401).json({
-                status: 'error',
-                message: 'Authentication required',
-            });
-        }
-
-        const id = req.params.id;
-
-        if (typeof id !== 'string') {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Invalid category id',
-            });
-        }
-
-        const result = await categoryService.deleteCategory(
+        const category = await categoryService.updateCategory(
             req.userId,
             id,
+            result.data,
         );
+
+        return res.json({
+            status: 'ok',
+            category,
+        });
+    } catch (error) {
+        console.error(error);
+
+        if (error instanceof Error && error.message === 'Category not found') {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Category not found',
+            });
+        }
+
+        if (
+            error instanceof Error &&
+            error.message ===
+                'Category name already exists for this transaction type'
+        ) {
+            return res.status(409).json({
+                status: 'error',
+                message: error.message,
+            });
+        }
+
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to update category',
+        });
+    }
+};
+
+export const deleteCategory = async (
+    req: AuthRequest<{ id: string }>,
+    res: Response,
+) => {
+    if (!req.userId) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Authentication required',
+        });
+    }
+
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Invalid category id',
+        });
+    }
+
+    try {
+        const result = await categoryService.deleteCategory(req.userId, id);
 
         if (result.reason === 'NOT_FOUND') {
             return res.status(404).json({

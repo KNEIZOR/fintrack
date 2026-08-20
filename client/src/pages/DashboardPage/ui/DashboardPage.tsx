@@ -1,12 +1,19 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
+
 import { useTranslation } from 'react-i18next';
 
+import type { AnalyticsPeriod } from '@/api/analytics.api';
+
 import { BalanceCard } from '@/widgets/dashboard/ui/BalanceCard';
+
 import { StatCard } from '@/widgets/dashboard/ui/StatCard';
+
 import { RecentTransactions } from '@/widgets/dashboard/ui/RecentTransactions';
 
 import { DashboardSkeleton } from './DashboardSkeleton/DashboardSkeleton';
+
 import { useDashboard } from '../model/useDashboard';
+
 import { useAnalytics } from '../model/useAnalytics';
 
 import styles from './DashboardPage.module.scss';
@@ -18,6 +25,9 @@ const AnalyticsSection = lazy(
 export const DashboardPage = () => {
     const { t } = useTranslation();
 
+    const [analyticsPeriod, setAnalyticsPeriod] =
+        useState<AnalyticsPeriod>('6m');
+
     const {
         dashboard,
         isLoading: isDashboardLoading,
@@ -25,10 +35,11 @@ export const DashboardPage = () => {
     } = useDashboard();
 
     const {
-        analytics,
+        data: analytics,
         isLoading: isAnalyticsLoading,
+        isFetching: isAnalyticsFetching,
         error: analyticsError,
-    } = useAnalytics();
+    } = useAnalytics(analyticsPeriod);
 
     const isLoading = isDashboardLoading || isAnalyticsLoading;
 
@@ -42,7 +53,9 @@ export const DashboardPage = () => {
         return (
             <main className={styles.dashboard}>
                 <div className={styles.container}>
-                    <div className={styles.error}>{t('dashboard.error')}</div>
+                    <div className={styles.error} role="alert">
+                        {t('dashboard.error')}
+                    </div>
                 </div>
             </main>
         );
@@ -52,25 +65,28 @@ export const DashboardPage = () => {
         return null;
     }
 
+    const currency = dashboard.accounts[0]?.currency ?? 'EUR';
+
     return (
         <main className={styles.dashboard}>
             <div className={styles.container}>
                 <header className={styles.header}>
                     <h1 className={styles.title}>{t('dashboard.title')}</h1>
 
-                    <p className={styles.subtitle}>
-                        {t('dashboard.recentTransactions')}
-                    </p>
+                    <p className={styles.subtitle}>{t('dashboard.subtitle')}</p>
                 </header>
 
                 <section className={styles.balance}>
                     <BalanceCard
                         balance={dashboard.balance}
-                        currency={dashboard.accounts[0]?.currency ?? 'EUR'}
+                        currency={currency}
                     />
                 </section>
 
-                <div className={styles.stats}>
+                <section
+                    className={styles.stats}
+                    aria-label={t('dashboard.title')}
+                >
                     <StatCard
                         title={t('dashboard.income')}
                         value={dashboard.income}
@@ -88,13 +104,13 @@ export const DashboardPage = () => {
                         value={dashboard.net}
                         type="neutral"
                     />
-                </div>
+                </section>
 
-                <div className={styles.content}>
+                <section className={styles.content}>
                     <RecentTransactions
                         transactions={dashboard.recentTransactions}
                     />
-                </div>
+                </section>
 
                 {analytics && (
                     <Suspense
@@ -104,7 +120,13 @@ export const DashboardPage = () => {
                             </div>
                         }
                     >
-                        <AnalyticsSection analytics={analytics} />
+                        <AnalyticsSection
+                            analytics={analytics}
+                            period={analyticsPeriod}
+                            onPeriodChange={setAnalyticsPeriod}
+                            currency={currency}
+                            isFetching={isAnalyticsFetching}
+                        />
                     </Suspense>
                 )}
             </div>

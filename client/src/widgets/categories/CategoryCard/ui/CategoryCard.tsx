@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowUpRight, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import type { Category } from '@/api/categories.api';
@@ -7,25 +7,23 @@ import styles from './CategoryCard.module.scss';
 
 interface CategoryCardProps {
     category: Category;
-    onDelete?: (id: string) => void;
-    isDeleting?: boolean;
+    onEdit: (category: Category) => void;
+    onDelete: (id: string) => void;
+    isDeleting: boolean;
 }
 
 export const CategoryCard = ({
     category,
+    onEdit,
     onDelete,
-    isDeleting = false,
+    isDeleting,
 }: CategoryCardProps) => {
     const { t } = useTranslation();
 
     const isIncome = category.type === 'INCOME';
 
-    const typeLabel = isIncome
-        ? t('categories.income')
-        : t('categories.expenses');
-
     const handleDelete = () => {
-        if (isDeleting || !onDelete) {
+        if (isDeleting) {
             return;
         }
 
@@ -38,20 +36,42 @@ export const CategoryCard = ({
         onDelete(category.id);
     };
 
-    const Icon = isIncome ? ArrowUpRight : ArrowDownLeft;
-
     return (
-        <article
-            className={`${styles.card} ${
-                isIncome ? styles.income : styles.expense
-            }`}
-        >
-            <div className={styles.top}>
-                <div className={styles.icon}>
-                    <Icon size={22} strokeWidth={2} />
+        <article className={styles.card}>
+            <div className={styles.main}>
+                <div
+                    className={`${styles.icon} ${
+                        isIncome ? styles.income : styles.expense
+                    }`}
+                >
+                    <span>{isIncome ? '+' : '−'}</span>
                 </div>
 
-                <span className={styles.type}>{typeLabel}</span>
+                <div className={styles.info}>
+                    <h3 className={styles.name}>{category.name}</h3>
+
+                    <span
+                        className={`${styles.type} ${
+                            isIncome ? styles.income : styles.expense
+                        }`}
+                    >
+                        {isIncome
+                            ? t('categories.income')
+                            : t('categories.expense')}
+                    </span>
+                </div>
+            </div>
+
+            <div className={styles.actions}>
+                <button
+                    type="button"
+                    className={styles.editButton}
+                    onClick={() => onEdit(category)}
+                    disabled={isDeleting}
+                    aria-label={t('categories.edit')}
+                >
+                    <Pencil size={17} />
+                </button>
 
                 <button
                     type="button"
@@ -60,12 +80,8 @@ export const CategoryCard = ({
                     disabled={isDeleting}
                     aria-label={t('categories.delete')}
                 >
-                    <Trash2 size={18} />
+                    <Trash2 size={17} />
                 </button>
-            </div>
-
-            <div className={styles.content}>
-                <h3 className={styles.name}>{category.name}</h3>
             </div>
         </article>
     );

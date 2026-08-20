@@ -1,0 +1,55 @@
+.switcher {
+    display: flex;
+
+    gap: 8px;
+
+    background: #f3f4f6;
+
+    padding: 4px;
+
+    border-radius: 10px;
+}
+
+.switcher button {
+    border: none;
+
+    background: transparent;
+
+    padding: 8px 14px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.switcher button:hover {
+    color: #111827;
+}
+
+.active {
+    background: #ffffff;
+
+    color: #111827 !important;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+    .switcher {
+        width: 100%;
+    }
+
+    .switcher button {
+        flex: 1;
+
+        padding: 8px;
+    }
+}

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import type { DashboardTransaction } from '@/api/dashboard.api';
@@ -12,6 +13,11 @@ export const RecentTransactions = ({
     transactions,
 }: RecentTransactionsProps) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    const handleTransactionClick = (id: string) => {
+        navigate(`/transactions?edit=${id}`);
+    };
 
     return (
         <section className={styles.section}>
@@ -27,7 +33,14 @@ export const RecentTransactions = ({
                         const isIncome = transaction.type === 'INCOME';
 
                         return (
-                            <div className={styles.item} key={transaction.id}>
+                            <button
+                                type="button"
+                                className={styles.item}
+                                key={transaction.id}
+                                onClick={() =>
+                                    handleTransactionClick(transaction.id)
+                                }
+                            >
                                 <div className={styles.info}>
                                     <strong>{transaction.category.name}</strong>
 
@@ -53,7 +66,7 @@ export const RecentTransactions = ({
                                         },
                                     )}
                                 </strong>
-                            </div>
+                            </button>
                         );
                     })}
                 </div>

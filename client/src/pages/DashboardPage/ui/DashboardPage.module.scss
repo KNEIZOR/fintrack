@@ -1,11 +1,15 @@
 .dashboard {
     min-height: 100vh;
+
     padding: 32px;
+
     background: #f5f7fa;
 }
 
 .container {
+    width: 100%;
     max-width: 1200px;
+
     margin: 0 auto;
 }
 
@@ -15,14 +19,21 @@
 
 .title {
     margin: 0;
+
+    color: #111827;
+
     font-size: 32px;
     font-weight: 700;
-    color: #111827;
+    line-height: 1.2;
 }
 
 .subtitle {
     margin: 8px 0 0;
+
     color: #6b7280;
+
+    font-size: 15px;
+    line-height: 1.5;
 }
 
 .balance {
@@ -31,30 +42,59 @@
 
 .stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
     gap: 16px;
+
     margin-bottom: 32px;
 }
 
 .content {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+
     gap: 24px;
 }
 
-.loading,
-.error {
-    min-height: 100vh;
+.analyticsLoading {
+    min-height: 180px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 18px;
+    margin-top: 24px;
+
+    color: #6b7280;
+
+    font-size: 14px;
 }
 
 .error {
+    min-height: 300px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
     color: #dc2626;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .dashboard {
+        padding: 24px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -62,11 +102,45 @@
         padding: 20px 16px;
     }
 
+    .header {
+        margin-bottom: 24px;
+    }
+
     .title {
         font-size: 26px;
     }
 
+    .subtitle {
+        font-size: 14px;
+    }
+
+    .balance {
+        margin-bottom: 16px;
+    }
+
     .stats {
         grid-template-columns: 1fr;
+
+        gap: 12px;
+
+        margin-bottom: 24px;
+    }
+
+    .content {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard {
+        padding: 16px 12px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        margin-top: 6px;
     }
 }

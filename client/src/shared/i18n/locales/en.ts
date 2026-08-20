@@ -19,6 +19,7 @@ export const en = {
 
         dashboard: {
             title: 'Dashboard',
+            subtitle: 'Overview of your finances',
             totalBalance: 'Total balance',
             income: 'Income',
             expenses: 'Expenses',
@@ -60,16 +61,21 @@ export const en = {
             title: 'Categories',
             subtitle: 'Manage your income and expense categories',
             income: 'Income',
-            expenses: 'Expenses',
+            expense: 'Expense',
             addCategory: 'Add category',
             noCategories: 'No categories yet.',
             error: 'Failed to load categories',
             addDescription: 'Add description',
-            name: 'Name',
+            categoryName: 'Category name',
             namePlaceholder: 'Enter name',
-            type: 'Type',
-            creating: 'Creating',
-            deleteConfirmation: 'Are you sure you want to delete this?',
+            categoryType: 'Category type',
+            creating: 'Creating...',
+            deleting: 'Deleting...',
+            deleteConfirmation:
+                'Are you sure you want to delete this category?',
+            yourCategories: 'Your categories',
+            addCategoryDescription: 'Add category вescription',
+            createCategory: 'Create category',
         },
 
         language: {
@@ -91,25 +97,64 @@ export const en = {
         transactions: {
             title: 'Transactions',
             subtitle: 'Manage your income and expenses',
+
             addTransaction: 'Add transaction',
-            addDescription: 'Record a new financial transaction',
+            addTransactionDescription: 'Record a new financial transaction',
+
+            editTransaction: 'Edit transaction',
+            editTransactionDescription: 'Update your financial transaction',
+
             history: 'Transactions history',
             historyDescription: 'Your recent financial activity',
+
             income: 'Income',
             expense: 'Expense',
+
+            type: 'Type',
+
             amount: 'Amount',
             account: 'Account',
             category: 'Category',
             description: 'Description',
             descriptionPlaceholder: 'What was this transaction for?',
             date: 'Date',
+
             selectAccount: 'Select account',
             selectCategory: 'Select category',
+
             creating: 'Creating...',
+            updating: 'Updating...',
+
+            createTransaction: 'Create transaction',
+            saveChanges: 'Save changes',
+
             noTransactions: 'No transactions yet.',
+            noFilteredTransactions: 'No transactions match your filters.',
+
             error: 'Failed to load transactions',
             invalidAmount: 'Amount must be greater than zero',
             createError: 'Failed to create transaction',
+            updateError: 'Failed to update transaction',
+            deleteError: 'Failed to delete transaction',
+
+            deleting: 'Deleting...',
+
+            search: 'Search transactions',
+            searchPlaceholder: 'Search by description, category or account...',
+
+            allTransactions: 'All transactions',
+            allAccounts: 'All accounts',
+            allCategories: 'All categories',
+
+            sort: 'Sort',
+            newestFirst: 'Newest first',
+            oldestFirst: 'Oldest first',
+            highestAmount: 'Highest amount',
+            lowestAmount: 'Lowest amount',
+
+            deleteConfirmation:
+                'Are you sure you want to delete this transaction?',
+            recent: 'Recent',
         },
 
         analytics: {
@@ -118,12 +163,17 @@ export const en = {
             noData: 'No analytics data yet',
             chartLabel: 'Financial analytics chart',
 
+            last3Months: '3 months',
+            last6Months: '6 months',
+            last12Months: '12 months',
+
             income: 'Income',
             expenses: 'Expenses',
             net: 'Net',
 
             incomeByCategory: 'Income by category',
             expensesByCategory: 'Expenses by category',
+            updating: 'Updating analytics',
 
             noIncome: 'No income yet',
             noExpenses: 'No expenses yet',

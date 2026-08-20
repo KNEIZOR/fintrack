@@ -2,29 +2,44 @@ import { type FormEvent, useState } from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import type { CreateCategoryInput } from '@/api/categories.api';
+import type {
+    Category,
+    CreateCategoryInput,
+    UpdateCategoryInput,
+} from '@/api/categories.api';
 
 import styles from './CategoryModal.module.scss';
 
 interface CategoryModalProps {
     isOpen: boolean;
-    isCreating: boolean;
-    error: string | null;
+    isSubmitting: boolean;
+    error: Error | null;
+
+    category: Category | null;
+
     onClose: () => void;
-    onSubmit: (data: CreateCategoryInput) => Promise<void>;
+
+    onSubmit: (
+        data: CreateCategoryInput | UpdateCategoryInput,
+    ) => Promise<void>;
 }
 
 export const CategoryModal = ({
     isOpen,
-    isCreating,
+    isSubmitting,
     error,
+    category,
     onClose,
     onSubmit,
 }: CategoryModalProps) => {
     const { t } = useTranslation();
 
-    const [name, setName] = useState('');
-    const [type, setType] = useState<CreateCategoryInput['type']>('EXPENSE');
+    const isEditing = Boolean(category);
+
+    const [name, setName] = useState(category?.name ?? '');
+    const [type, setType] = useState<CreateCategoryInput['type']>(
+        category?.type ?? 'EXPENSE',
+    );
 
     if (!isOpen) {
         return null;
@@ -33,34 +48,20 @@ export const CategoryModal = ({
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const trimmedName = name.trim();
-
-        if (trimmedName.length < 2) {
-            return;
-        }
-
-        await onSubmit({
-            name: trimmedName,
+        const data: CreateCategoryInput | UpdateCategoryInput = {
+            name: name.trim(),
             type,
-        });
+        };
 
-        setName('');
-        setType('EXPENSE');
-    };
-
-    const handleClose = () => {
-        if (isCreating) {
+        if (!data.name) {
             return;
         }
 
-        setName('');
-        setType('EXPENSE');
-
-        onClose();
+        await onSubmit(data);
     };
 
     return (
-        <div className={styles.overlay} onMouseDown={handleClose}>
+        <div className={styles.overlay} onMouseDown={onClose}>
             <div
                 className={styles.modal}
                 onMouseDown={(event) => event.stopPropagation()}
@@ -68,20 +69,24 @@ export const CategoryModal = ({
                 <header className={styles.header}>
                     <div>
                         <h2 className={styles.title}>
-                            {t('categories.addCategory')}
+                            {isEditing
+                                ? t('categories.editCategory')
+                                : t('categories.addCategory')}
                         </h2>
 
                         <p className={styles.subtitle}>
-                            {t('categories.addDescription')}
+                            {isEditing
+                                ? t('categories.editCategoryDescription')
+                                : t('categories.addCategoryDescription')}
                         </p>
                     </div>
 
                     <button
                         type="button"
-                        className={styles.closeButton}
-                        onClick={handleClose}
-                        disabled={isCreating}
-                        aria-label="Close"
+                        className={styles.close}
+                        onClick={onClose}
+                        disabled={isSubmitting}
+                        aria-label={t('common.close')}
                     >
                         <X size={20} />
                     </button>
@@ -89,32 +94,30 @@ export const CategoryModal = ({
 
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.field}>
-                        <label className={styles.label} htmlFor="category-name">
-                            {t('categories.name')}
+                        <label htmlFor="category-name">
+                            {t('categories.categoryName')}
                         </label>
 
                         <input
                             id="category-name"
-                            className={styles.input}
                             type="text"
                             value={name}
                             onChange={(event) => setName(event.target.value)}
-                            placeholder={t('categories.namePlaceholder')}
+                            placeholder="Food"
                             minLength={2}
                             maxLength={50}
                             required
-                            autoFocus
+                            disabled={isSubmitting}
                         />
                     </div>
 
                     <div className={styles.field}>
-                        <label className={styles.label} htmlFor="category-type">
-                            {t('categories.type')}
+                        <label htmlFor="category-type">
+                            {t('categories.categoryType')}
                         </label>
 
                         <select
                             id="category-type"
-                            className={styles.input}
                             value={type}
                             onChange={(event) =>
                                 setType(
@@ -122,9 +125,10 @@ export const CategoryModal = ({
                                         .value as CreateCategoryInput['type'],
                                 )
                             }
+                            disabled={isSubmitting}
                         >
                             <option value="EXPENSE">
-                                {t('categories.expenses')}
+                                {t('categories.expense')}
                             </option>
 
                             <option value="INCOME">
@@ -135,34 +139,36 @@ export const CategoryModal = ({
 
                     {error && (
                         <div className={styles.error} role="alert">
-                            {error}
+                            {error.message}
                         </div>
                     )}
 
-                    <footer className={styles.footer}>
+                    <div className={styles.actions}>
                         <button
                             type="button"
-                            className={styles.cancelButton}
-                            onClick={handleClose}
-                            disabled={isCreating}
+                            className={styles.cancel}
+                            onClick={onClose}
+                            disabled={isSubmitting}
                         >
                             {t('common.cancel')}
                         </button>
 
                         <button
                             type="submit"
-                            className={styles.submitButton}
-                            disabled={isCreating || name.trim().length < 2}
+                            className={styles.submit}
+                            disabled={isSubmitting || !name.trim()}
                         >
-                            {isCreating
-                                ? t('categories.creating')
-                                : t('categories.addCategory')}
+                            {isSubmitting
+                                ? isEditing
+                                    ? t('categories.updating')
+                                    : t('categories.creating')
+                                : isEditing
+                                  ? t('categories.saveChanges')
+                                  : t('categories.createCategory')}
                         </button>
-                    </footer>
+                    </div>
                 </form>
             </div>
         </div>
     );
 };
-
-export default CategoryModal;

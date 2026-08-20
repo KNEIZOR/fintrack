@@ -13,18 +13,44 @@ export const getAnalytics = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        const analytics = await analyticsService.getAnalytics(req.userId);
+        const periodParam = req.query.period;
+
+        const period =
+            periodParam === '3m' ||
+            periodParam === '6m' ||
+            periodParam === '12m'
+                ? periodParam
+                : '6m';
+
+        console.log('[Analytics] Request:', {
+            userId: req.userId,
+            period,
+        });
+
+        const analytics = await analyticsService.getAnalytics(
+            req.userId,
+            period,
+        );
+
+        console.log('[Analytics] Success:', {
+            period,
+            months: analytics.monthly.length,
+            categories: analytics.categories.length,
+        });
 
         return res.json({
             status: 'ok',
             analytics,
         });
     } catch (error) {
-        console.error(error);
+        console.error('[Analytics] Error:', error);
 
         return res.status(500).json({
             status: 'error',
-            message: 'Failed to get analytics',
+            message:
+                error instanceof Error
+                    ? error.message
+                    : 'Failed to get analytics',
         });
     }
 };

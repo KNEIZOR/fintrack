@@ -14,12 +14,22 @@ export interface CreateCategoryInput {
     type: 'INCOME' | 'EXPENSE';
 }
 
+export interface UpdateCategoryInput {
+    name: string;
+    type: 'INCOME' | 'EXPENSE';
+}
+
 interface CategoriesResponse {
     status: string;
     categories: Category[];
 }
 
 interface CreateCategoryResponse {
+    status: string;
+    category: Category;
+}
+
+interface UpdateCategoryResponse {
     status: string;
     category: Category;
 }
@@ -42,6 +52,21 @@ export const createCategory = async (
         '/api/categories',
         {
             method: 'POST',
+            body: data,
+        },
+    );
+
+    return response.category;
+};
+
+export const updateCategory = async (
+    id: string,
+    data: UpdateCategoryInput,
+): Promise<Category> => {
+    const response = await apiClient<UpdateCategoryResponse>(
+        `/api/categories/${id}`,
+        {
+            method: 'PATCH',
             body: data,
         },
     );

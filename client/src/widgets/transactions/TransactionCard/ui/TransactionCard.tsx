@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowUpRight, Trash2 } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import type { Transaction } from '@/api/transactions.api';
@@ -7,12 +7,17 @@ import styles from './TransactionCard.module.scss';
 
 interface TransactionCardProps {
     transaction: Transaction;
+
+    onEdit?: (transaction: Transaction) => void;
+
     onDelete?: (id: string) => void;
+
     isDeleting?: boolean;
 }
 
 export const TransactionCard = ({
     transaction,
+    onEdit,
     onDelete,
     isDeleting = false,
 }: TransactionCardProps) => {
@@ -28,6 +33,14 @@ export const TransactionCard = ({
     const formattedDate = new Date(transaction.date).toLocaleDateString(
         'en-GB',
     );
+
+    const handleEdit = () => {
+        if (isDeleting || !onEdit) {
+            return;
+        }
+
+        onEdit(transaction);
+    };
 
     const handleDelete = () => {
         if (isDeleting || !onDelete) {
@@ -81,15 +94,27 @@ export const TransactionCard = ({
                     {formattedAmount}
                 </strong>
 
-                <button
-                    type="button"
-                    className={styles.deleteButton}
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    aria-label={t('transactions.delete')}
-                >
-                    <Trash2 size={17} />
-                </button>
+                <div className={styles.actions}>
+                    <button
+                        type="button"
+                        className={styles.editButton}
+                        onClick={handleEdit}
+                        disabled={isDeleting}
+                        aria-label={t('common.edit')}
+                    >
+                        <Pencil size={17} />
+                    </button>
+
+                    <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        aria-label={t('common.delete')}
+                    >
+                        <Trash2 size={17} />
+                    </button>
+                </div>
             </div>
         </article>
     );

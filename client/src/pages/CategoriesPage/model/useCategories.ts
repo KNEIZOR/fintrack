@@ -4,8 +4,10 @@ import {
     createCategory,
     deleteCategory,
     getCategories,
+    updateCategory,
     type Category,
     type CreateCategoryInput,
+    type UpdateCategoryInput,
 } from '@/api/categories.api';
 
 export const useCategories = () => {
@@ -16,8 +18,8 @@ export const useCategories = () => {
         queryFn: getCategories,
     });
 
-    const createMutation = useMutation({
-        mutationFn: (data: CreateCategoryInput) => createCategory(data),
+    const createMutation = useMutation<Category, Error, CreateCategoryInput>({
+        mutationFn: createCategory,
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -26,8 +28,25 @@ export const useCategories = () => {
         },
     });
 
-    const deleteMutation = useMutation({
-        mutationFn: (id: string) => deleteCategory(id),
+    const updateMutation = useMutation<
+        Category,
+        Error,
+        {
+            id: string;
+            data: UpdateCategoryInput;
+        }
+    >({
+        mutationFn: ({ id, data }) => updateCategory(id, data),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['categories'],
+            });
+        },
+    });
+
+    const deleteMutation = useMutation<void, Error, string>({
+        mutationFn: deleteCategory,
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -40,19 +59,21 @@ export const useCategories = () => {
         categories: query.data ?? [],
 
         isLoading: query.isLoading,
-
-        error: query.error ?? createMutation.error ?? deleteMutation.error,
-
+        error: query.error,
         isError: query.isError,
 
-        isCreating: createMutation.isPending,
-
-        isDeleting: deleteMutation.isPending,
+        refetch: query.refetch,
 
         createCategory: createMutation.mutateAsync,
+        isCreating: createMutation.isPending,
+        createError: createMutation.error,
+
+        updateCategory: updateMutation.mutateAsync,
+        isUpdating: updateMutation.isPending,
+        updateError: updateMutation.error,
 
         deleteCategory: deleteMutation.mutateAsync,
-
-        refetch: query.refetch,
+        isDeleting: deleteMutation.isPending,
+        deleteError: deleteMutation.error,
     };
 };

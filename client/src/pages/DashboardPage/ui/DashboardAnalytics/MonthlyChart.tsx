@@ -1,6 +1,6 @@
 import type { MonthlyAnalytics } from '@/api/analytics.api';
 
-import { AnalyticsChart } from '../AnalyticsSection/AnalyticsChart';
+import { AnalyticsChart } from '../AnalyticsSection/AnalyticsChart/AnalyticsChart';
 
 interface MonthlyChartProps {
     data: MonthlyAnalytics[];

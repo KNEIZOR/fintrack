@@ -4,28 +4,24 @@ export type TransactionType = 'INCOME' | 'EXPENSE';
 
 export interface Transaction {
     id: string;
-    userId: string;
     accountId: string;
     categoryId: string;
-
     type: TransactionType;
-
-    amount: number;
+    amount: string;
     description: string | null;
     date: string;
 
-    createdAt: string;
-    updatedAt: string;
-}
+    account: {
+        id: string;
+        name: string;
+        currency: string;
+    };
 
-interface TransactionsResponse {
-    status: string;
-    transactions: Transaction[];
-}
-
-interface TransactionResponse {
-    status: string;
-    transaction: Transaction;
+    category: {
+        id: string;
+        name: string;
+        type: TransactionType;
+    };
 }
 
 export interface CreateTransactionInput {
@@ -35,6 +31,18 @@ export interface CreateTransactionInput {
     amount: number;
     description?: string;
     date: string;
+}
+
+export type UpdateTransactionInput = CreateTransactionInput;
+
+interface TransactionsResponse {
+    status: string;
+    transactions: Transaction[];
+}
+
+interface TransactionResponse {
+    status: string;
+    transaction: Transaction;
 }
 
 export const getTransactions = async (): Promise<Transaction[]> => {
@@ -54,9 +62,22 @@ export const createTransaction = async (
     return response.transaction;
 };
 
-export const deleteTransaction = async (
+export const updateTransaction = async (
     id: string,
-): Promise<void> => {
+    data: UpdateTransactionInput,
+): Promise<Transaction> => {
+    const response = await apiClient<TransactionResponse>(
+        `/api/transactions/${id}`,
+        {
+            method: 'PATCH',
+            body: data,
+        },
+    );
+
+    return response.transaction;
+};
+
+export const deleteTransaction = async (id: string): Promise<void> => {
     await apiClient(`/api/transactions/${id}`, {
         method: 'DELETE',
     });
