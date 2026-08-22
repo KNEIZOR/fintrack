@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import type { RegisterInput } from '@/api/auth.api';
-
 import { register } from '@/api/auth.api';
 import { ApiErrorMessage } from '@/shared/api/ApiErrorMessage';
 
@@ -36,8 +35,14 @@ export const RegisterPage = () => {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        if (form.password.length < 8) {
+            setError(new Error(t('errors.passwordMinLength')));
+
+            return;
+        }
+
         if (form.password !== confirmPassword) {
-            setError(new Error(t('auth.passwordsDoNotMatch')));
+            setError(new Error(t('errors.passwordsDoNotMatch')));
 
             return;
         }
@@ -132,6 +137,7 @@ export const RegisterPage = () => {
                             }
                             placeholder="••••••••"
                             autoComplete="new-password"
+                            minLength={8}
                             required
                         />
                     </div>
@@ -154,6 +160,7 @@ export const RegisterPage = () => {
                             }
                             placeholder="••••••••"
                             autoComplete="new-password"
+                            minLength={8}
                             required
                         />
                     </div>

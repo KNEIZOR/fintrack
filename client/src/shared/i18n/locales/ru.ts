@@ -252,6 +252,9 @@ export const ru = {
             INVALID_CREDENTIALS: 'Неверный email или пароль',
             USER_NOT_FOUND: 'Пользователь не найден',
             AUTHENTICATION_REQUIRED: 'Необходимо войти в аккаунт',
+
+            passwordMinLength: 'Пароль должен содержать минимум 8 символов',
+            passwordsDoNotMatch: 'Пароли не совпадают',
         },
     },
 };

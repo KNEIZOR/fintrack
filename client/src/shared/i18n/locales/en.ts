@@ -255,6 +255,9 @@ export const en = {
             INVALID_CREDENTIALS: 'Invalid email or password',
             USER_NOT_FOUND: 'User not found',
             AUTHENTICATION_REQUIRED: 'Authentication required',
+
+            passwordMinLength: 'Password must contain at least 8 characters',
+            passwordsDoNotMatch: 'Passwords do not match',
         },
     },
 };
