@@ -56,6 +56,11 @@ export const ru = {
             initialBalance: 'Начальный баланс',
             creating: 'Создание...',
             createAccount: 'Создать счёт',
+            editAccount: 'Изменить счет',
+            editAccountDescription: 'Обновите данные счета',
+            balance: 'Баланс',
+            saveChanges: 'Сохранить изменения',
+            deleteConfirmation: 'Вы уверены, что хотите удалить этот счет?',
         },
 
         categories: {
@@ -76,6 +81,9 @@ export const ru = {
             yourCategories: 'Ваши категории',
             addCategoryDescription: 'Добавье описание категории',
             createCategory: 'Создать категорию',
+            editCategory: 'Изменить категорию',
+            editCategoryDescription: 'Обновить сведения о категории',
+            saveChanges: 'Сохранить изменения',
         },
 
         language: {
@@ -160,6 +168,15 @@ export const ru = {
             subtitle: 'Обзор доходов и расходов',
             noData: 'Пока нет данных для аналитики',
             chartLabel: 'График финансовой аналитики',
+            categoriesTitle: 'Аналитика по категориям',
+            categoriesSubtitle: 'Распределение доходов и расходов',
+            categoriesChartLabel: 'График аналитики по категориям',
+            total: 'Всего',
+            changePositive: 'Рост по сравнению с предыдущим периодом',
+            changeNegative: 'Снижение по сравнению с предыдущим периодом',
+            noChange: 'Без изменений по сравнению с предыдущим периодом',
+            improved: 'Улучшение',
+            decreased: 'Снижение',
 
             last3Months: '3 месяца',
             last6Months: '6 месяцев',
@@ -175,6 +192,56 @@ export const ru = {
             noIncome: 'Доходов пока нет',
             noExpenses: 'Расходов пока нет',
             updating: 'Обновление аналитики',
+        },
+
+        errors: {
+            default: 'Произошла ошибка',
+            unauthorized: 'Вы не авторизованы',
+            forbidden: 'Доступ запрещён',
+            notFound: 'Ресурс не найден',
+            validation: 'Проверьте введённые данные',
+            server: 'Ошибка сервера. Попробуйте ещё раз позже',
+
+            authenticationRequired: 'Необходимо войти в аккаунт',
+            validationFailed: 'Ошибка валидации данных',
+
+            accountNotFound: 'Счёт не найден',
+            accountHasTransactions:
+                'Нельзя удалить счёт, потому что он используется в транзакциях',
+            failedToCreateAccount: 'Не удалось создать счёт',
+            failedToGetAccounts: 'Не удалось загрузить счета',
+            failedToUpdateAccount: 'Не удалось обновить счёт',
+            failedToDeleteAccount: 'Не удалось удалить счёт',
+
+            categoryNotFound: 'Категория не найдена',
+            categoryNameAlreadyExists:
+                'Категория с таким названием уже существует для этого типа операции',
+            categoryHasTransactions:
+                'Нельзя удалить категорию, потому что она используется в транзакциях',
+            invalidCategoryId: 'Некорректный идентификатор категории',
+            failedToCreateCategory: 'Не удалось создать категорию',
+            failedToGetCategories: 'Не удалось загрузить категории',
+            failedToUpdateCategory: 'Не удалось обновить категорию',
+            failedToDeleteCategory: 'Не удалось удалить категорию',
+
+            transactionNotFound: 'Транзакция не найдена',
+            categoryTypeMismatch:
+                'Тип категории не соответствует типу транзакции',
+            failedToCreateTransaction: 'Не удалось создать транзакцию',
+            failedToGetTransactions: 'Не удалось загрузить транзакции',
+            failedToUpdateTransaction: 'Не удалось обновить транзакцию',
+            failedToDeleteTransaction: 'Не удалось удалить транзакцию',
+
+            internalServerError: 'Внутренняя ошибка сервера',
+            unknown: 'Произошла неизвестная ошибка',
+
+            invalidToken: 'Недействительный токен',
+            invalidOrExpiredToken: 'Недействительный или просроченный токен',
+
+            USER_ALREADY_EXISTS: 'Пользователь с таким email уже существует',
+            INVALID_CREDENTIALS: 'Неверный email или пароль',
+            USER_NOT_FOUND: 'Пользователь не найден',
+            AUTHENTICATION_REQUIRED: 'Необходимо войти в аккаунт',
         },
     },
 };

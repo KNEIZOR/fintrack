@@ -7,6 +7,7 @@ import { AnalyticsSummary } from './AnalyticsSummary/AnalyticsSummary';
 import { AnalyticsPeriodSwitcher } from './AnalyticsPeriodSwitcher/AnalyticsPeriodSwitcher';
 
 import styles from './AnalyticsSection.module.scss';
+import { AnalyticsCategories } from './AnalyticsCategories/AnalyticsCategories';
 
 interface AnalyticsSectionProps {
     analytics: AnalyticsData;
@@ -53,6 +54,11 @@ export const AnalyticsSection = ({
                 <AnalyticsSummary analytics={analytics} currency={currency} />
 
                 <AnalyticsChart analytics={analytics} currency={currency} />
+
+                <AnalyticsCategories
+                    analytics={analytics}
+                    currency={currency}
+                />
 
                 {isFetching && (
                     <div

@@ -8,30 +8,34 @@ import styles from './AnalyticsSummary.module.scss';
 
 interface Props {
     analytics: AnalyticsData;
-
     currency: string;
 }
+
+type SummaryType = 'income' | 'expense' | 'net';
 
 export const AnalyticsSummary = ({ analytics, currency }: Props) => {
     const { t } = useTranslation();
 
     const { summary } = analytics;
 
-    const items = [
+    const items: {
+        title: string;
+        value: number;
+        change: number;
+        type: SummaryType;
+    }[] = [
         {
             title: t('analytics.income'),
             value: summary.income,
             change: summary.incomeChange,
             type: 'income',
         },
-
         {
             title: t('analytics.expenses'),
             value: summary.expenses,
             change: summary.expensesChange,
             type: 'expense',
         },
-
         {
             title: t('analytics.net'),
             value: summary.net,
@@ -42,16 +46,48 @@ export const AnalyticsSummary = ({ analytics, currency }: Props) => {
 
     const formatChange = (change: number) => {
         if (!Number.isFinite(change)) {
-            return '0.0%';
+            return '0%';
         }
 
-        const roundedChange = Number(change.toFixed(1));
+        const rounded = Math.round(change * 10) / 10;
 
-        if (roundedChange > 0) {
-            return `+${roundedChange}%`;
+        if (rounded === 0) {
+            return '0%';
         }
 
-        return `${roundedChange}%`;
+        return `${rounded > 0 ? '+' : ''}${rounded}%`;
+    };
+
+    const getChangeIcon = (change: number) => {
+        if (change > 0) {
+            return '↑';
+        }
+
+        if (change < 0) {
+            return '↓';
+        }
+
+        return '→';
+    };
+
+    const getChangeClassName = (type: SummaryType, change: number) => {
+        if (change === 0 || !Number.isFinite(change)) {
+            return styles.changeNeutral;
+        }
+
+        const isPositive = type === 'expense' ? change < 0 : change > 0;
+
+        return isPositive ? styles.changePositive : styles.changeNegative;
+    };
+
+    const getChangeLabel = (type: SummaryType, change: number) => {
+        if (change === 0 || !Number.isFinite(change)) {
+            return t('analytics.noChange');
+        }
+
+        const isPositive = type === 'expense' ? change < 0 : change > 0;
+
+        return isPositive ? t('analytics.improved') : t('analytics.decreased');
     };
 
     return (
@@ -67,9 +103,27 @@ export const AnalyticsSummary = ({ analytics, currency }: Props) => {
                         {formatCurrency(item.value, currency)}
                     </strong>
 
-                    <span className={styles.change}>
-                        {formatChange(item.change)}
-                    </span>
+                    <div className={styles.changeWrapper}>
+                        <span
+                            className={`${styles.change} ${getChangeClassName(
+                                item.type,
+                                item.change,
+                            )}`}
+                        >
+                            <span
+                                className={styles.changeIcon}
+                                aria-hidden="true"
+                            >
+                                {getChangeIcon(item.change)}
+                            </span>
+
+                            <span>{formatChange(item.change)}</span>
+                        </span>
+
+                        <span className={styles.changeLabel}>
+                            {getChangeLabel(item.type, item.change)}
+                        </span>
+                    </div>
                 </div>
             ))}
         </div>

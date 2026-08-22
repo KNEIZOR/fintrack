@@ -1,0 +1,109 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.title {
+    margin: 0;
+    color: #111827;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    max-width: 620px;
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.addButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-height: 46px;
+    padding: 0 20px;
+    border: 1px solid #111827;
+    border-radius: 10px;
+    background: #111827;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+.addButton:hover:not(:disabled) {
+    background: #1f2937;
+    border-color: #1f2937;
+    box-shadow: 0 6px 16px rgba(17, 24, 39, 0.16);
+}
+
+.addButton:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.addButton:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.25);
+    outline-offset: 2px;
+}
+
+.addButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .title {
+        font-size: 26px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+
+    .addButton {
+        width: 100%;
+        min-height: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+
+    .addButton {
+        min-height: 46px;
+        padding: 0 16px;
+    }
+}

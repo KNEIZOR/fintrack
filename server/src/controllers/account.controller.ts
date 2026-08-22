@@ -15,6 +15,7 @@ export const create = async (req: AuthRequest, res: Response) => {
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -24,6 +25,7 @@ export const create = async (req: AuthRequest, res: Response) => {
     if (!result.success) {
         return res.status(400).json({
             status: 'error',
+            code: 'VALIDATION_FAILED',
             message: 'Validation failed',
             errors: result.error.flatten().fieldErrors,
         });
@@ -41,6 +43,7 @@ export const create = async (req: AuthRequest, res: Response) => {
 
         return res.status(500).json({
             status: 'error',
+            code: 'INTERNAL_SERVER_ERROR',
             message: 'Internal server error',
         });
     }
@@ -50,6 +53,7 @@ export const getAll = async (req: AuthRequest, res: Response) => {
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -66,6 +70,7 @@ export const getAll = async (req: AuthRequest, res: Response) => {
 
         return res.status(500).json({
             status: 'error',
+            code: 'INTERNAL_SERVER_ERROR',
             message: 'Internal server error',
         });
     }
@@ -79,6 +84,7 @@ export const deleteAccount = async (
         if (!req.userId) {
             return res.status(401).json({
                 status: 'error',
+                code: 'AUTHENTICATION_REQUIRED',
                 message: 'Authentication required',
             });
         }
@@ -96,6 +102,7 @@ export const deleteAccount = async (
         if (error instanceof Error && error.message === 'Account not found') {
             return res.status(404).json({
                 status: 'error',
+                code: 'ACCOUNT_NOT_FOUND',
                 message: 'Account not found',
             });
         }
@@ -107,12 +114,15 @@ export const deleteAccount = async (
         ) {
             return res.status(409).json({
                 status: 'error',
-                message: error.message,
+                code: 'ACCOUNT_HAS_TRANSACTIONS',
+                message:
+                    'Account cannot be deleted because it is used by transactions',
             });
         }
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_DELETE_ACCOUNT',
             message: 'Failed to delete account',
         });
     }
@@ -126,6 +136,7 @@ export const updateAccount = async (
         if (!req.userId) {
             return res.status(401).json({
                 status: 'error',
+                code: 'AUTHENTICATION_REQUIRED',
                 message: 'Authentication required',
             });
         }
@@ -137,6 +148,7 @@ export const updateAccount = async (
         if (!result.success) {
             return res.status(400).json({
                 status: 'error',
+                code: 'VALIDATION_FAILED',
                 message: 'Validation failed',
                 errors: result.error.flatten().fieldErrors,
             });
@@ -158,12 +170,14 @@ export const updateAccount = async (
         if (error instanceof Error && error.message === 'Account not found') {
             return res.status(404).json({
                 status: 'error',
+                code: 'ACCOUNT_NOT_FOUND',
                 message: 'Account not found',
             });
         }
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_UPDATE_ACCOUNT',
             message: 'Failed to update account',
         });
     }

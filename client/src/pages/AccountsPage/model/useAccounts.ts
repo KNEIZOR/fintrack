@@ -16,54 +16,47 @@ export const useAccounts = () => {
     const queryClient = useQueryClient();
 
     const query = useQuery<Account[], Error>({
-        queryKey: ['accounts'],
+        queryKey: queryKeys.accounts,
         queryFn: getAccounts,
     });
+
+    const invalidateFinancialData = () => {
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.accounts,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.dashboard,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.analytics,
+        });
+    };
 
     const createMutation = useMutation<Account, Error, CreateAccountInput>({
         mutationFn: createAccount,
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['accounts'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.dashboard,
-            });
-        },
-    });
-
-    const deleteMutation = useMutation<void, Error, string>({
-        mutationFn: deleteAccount,
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['accounts'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.dashboard,
-            });
-        },
+        onSuccess: invalidateFinancialData,
     });
 
     const updateMutation = useMutation<
         Account,
         Error,
-        { id: string; data: UpdateAccountInput }
+        {
+            id: string;
+            data: UpdateAccountInput;
+        }
     >({
         mutationFn: ({ id, data }) => updateAccount(id, data),
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['accounts'],
-            });
+        onSuccess: invalidateFinancialData,
+    });
 
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.dashboard,
-            });
-        },
+    const deleteMutation = useMutation<void, Error, string>({
+        mutationFn: deleteAccount,
+
+        onSuccess: invalidateFinancialData,
     });
 
     return {
@@ -78,19 +71,15 @@ export const useAccounts = () => {
         refetch: query.refetch,
 
         createAccount: createMutation.mutateAsync,
-
         isCreating: createMutation.isPending,
-
         createError: createMutation.error,
-
-        deleteAccount: deleteMutation.mutateAsync,
-
-        isDeleting: deleteMutation.isPending,
-
-        deleteError: deleteMutation.error,
 
         updateAccount: updateMutation.mutateAsync,
         isUpdating: updateMutation.isPending,
         updateError: updateMutation.error,
+
+        deleteAccount: deleteMutation.mutateAsync,
+        isDeleting: deleteMutation.isPending,
+        deleteError: deleteMutation.error,
     };
 };

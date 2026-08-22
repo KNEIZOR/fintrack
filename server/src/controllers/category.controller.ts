@@ -13,6 +13,7 @@ export const createCategory = async (req: AuthRequest, res: Response) => {
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -22,6 +23,7 @@ export const createCategory = async (req: AuthRequest, res: Response) => {
     if (!result.success) {
         return res.status(400).json({
             status: 'error',
+            code: 'VALIDATION_FAILED',
             message: 'Validation failed',
             errors: result.error.flatten().fieldErrors,
         });
@@ -47,12 +49,15 @@ export const createCategory = async (req: AuthRequest, res: Response) => {
         ) {
             return res.status(409).json({
                 status: 'error',
-                message: error.message,
+                code: 'CATEGORY_NAME_ALREADY_EXISTS',
+                message:
+                    'Category name already exists for this transaction type',
             });
         }
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_CREATE_CATEGORY',
             message: 'Failed to create category',
         });
     }
@@ -62,6 +67,7 @@ export const getCategories = async (req: AuthRequest, res: Response) => {
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -78,6 +84,7 @@ export const getCategories = async (req: AuthRequest, res: Response) => {
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_GET_CATEGORIES',
             message: 'Failed to get categories',
         });
     }
@@ -90,6 +97,7 @@ export const update = async (
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -99,6 +107,7 @@ export const update = async (
     if (!id) {
         return res.status(400).json({
             status: 'error',
+            code: 'INVALID_CATEGORY_ID',
             message: 'Invalid category id',
         });
     }
@@ -108,6 +117,7 @@ export const update = async (
     if (!result.success) {
         return res.status(400).json({
             status: 'error',
+            code: 'VALIDATION_FAILED',
             message: 'Validation failed',
             errors: result.error.flatten().fieldErrors,
         });
@@ -130,6 +140,7 @@ export const update = async (
         if (error instanceof Error && error.message === 'Category not found') {
             return res.status(404).json({
                 status: 'error',
+                code: 'CATEGORY_NOT_FOUND',
                 message: 'Category not found',
             });
         }
@@ -141,12 +152,15 @@ export const update = async (
         ) {
             return res.status(409).json({
                 status: 'error',
-                message: error.message,
+                code: 'CATEGORY_NAME_ALREADY_EXISTS',
+                message:
+                    'Category name already exists for this transaction type',
             });
         }
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_UPDATE_CATEGORY',
             message: 'Failed to update category',
         });
     }
@@ -159,6 +173,7 @@ export const deleteCategory = async (
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -168,6 +183,7 @@ export const deleteCategory = async (
     if (!id) {
         return res.status(400).json({
             status: 'error',
+            code: 'INVALID_CATEGORY_ID',
             message: 'Invalid category id',
         });
     }
@@ -178,6 +194,7 @@ export const deleteCategory = async (
         if (result.reason === 'NOT_FOUND') {
             return res.status(404).json({
                 status: 'error',
+                code: 'CATEGORY_NOT_FOUND',
                 message: 'Category not found',
             });
         }
@@ -185,6 +202,7 @@ export const deleteCategory = async (
         if (result.reason === 'HAS_TRANSACTIONS') {
             return res.status(409).json({
                 status: 'error',
+                code: 'CATEGORY_HAS_TRANSACTIONS',
                 message:
                     'Category cannot be deleted because it is used by transactions',
             });
@@ -199,6 +217,7 @@ export const deleteCategory = async (
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_DELETE_CATEGORY',
             message: 'Failed to delete category',
         });
     }

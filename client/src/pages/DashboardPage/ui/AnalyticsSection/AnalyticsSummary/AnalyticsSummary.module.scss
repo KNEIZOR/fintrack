@@ -34,24 +34,72 @@
     color: #111827;
 }
 
-.change {
-    display: inline-block;
+.changeWrapper {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
 
     margin-top: 8px;
+}
+
+.change {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    width: fit-content;
+
+    padding: 4px 8px;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    line-height: 1;
+}
+
+.changeIcon {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
 
     font-size: 12px;
+
+    font-weight: 700;
 }
 
-.income .change {
-    color: #16a34a;
+.changeLabel {
+    color: #9ca3af;
+
+    font-size: 11px;
 }
 
-.expense .change {
-    color: #dc2626;
+.changePositive {
+    background: #dcfce7;
+
+    color: #15803d;
 }
 
-.net .change {
-    color: #2563eb;
+.changeNegative {
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+.changeNeutral {
+    background: #f3f4f6;
+
+    color: #6b7280;
 }
 
 @media (max-width: 768px) {

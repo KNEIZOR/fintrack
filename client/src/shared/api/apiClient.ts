@@ -6,10 +6,31 @@ interface ApiRequestOptions {
     body?: unknown;
 }
 
-interface ApiErrorResponse {
+export interface ApiErrorResponse {
     status?: string;
     message?: string;
+    code?: string;
     errors?: Record<string, string[]>;
+}
+
+export class ApiError extends Error {
+    readonly statusCode: number;
+    readonly code?: string;
+    readonly errors?: Record<string, string[]>;
+
+    constructor(
+        message: string,
+        statusCode: number,
+        code?: string,
+        errors?: Record<string, string[]>,
+    ) {
+        super(message);
+
+        this.name = 'ApiError';
+        this.statusCode = statusCode;
+        this.code = code;
+        this.errors = errors;
+    }
 }
 
 export const apiClient = async <T>(
@@ -33,6 +54,10 @@ export const apiClient = async <T>(
     if (!response.ok) {
         let message = 'Something went wrong';
 
+        let code: string | undefined;
+
+        let errors: Record<string, string[]> | undefined;
+
         try {
             const data: ApiErrorResponse = await response.json();
 
@@ -41,6 +66,10 @@ export const apiClient = async <T>(
                 status: response.status,
                 data,
             });
+
+            code = data.code;
+
+            errors = data.errors;
 
             if (data.errors) {
                 const validationErrors = Object.entries(data.errors)
@@ -59,7 +88,7 @@ export const apiClient = async <T>(
             // Response does not contain JSON
         }
 
-        throw new Error(message);
+        throw new ApiError(message, response.status, code, errors);
     }
 
     return response.json();

@@ -10,22 +10,38 @@ import {
     type UpdateCategoryInput,
 } from '@/api/categories.api';
 
+import { queryKeys } from '@/shared/api/queryKeys';
+
 export const useCategories = () => {
     const queryClient = useQueryClient();
 
     const query = useQuery<Category[], Error>({
-        queryKey: ['categories'],
+        queryKey: queryKeys.categories,
         queryFn: getCategories,
     });
+
+    const invalidateDependentQueries = () => {
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.categories,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.transactions,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.dashboard,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.analytics,
+        });
+    };
 
     const createMutation = useMutation<Category, Error, CreateCategoryInput>({
         mutationFn: createCategory,
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['categories'],
-            });
-        },
+        onSuccess: invalidateDependentQueries,
     });
 
     const updateMutation = useMutation<
@@ -38,21 +54,12 @@ export const useCategories = () => {
     >({
         mutationFn: ({ id, data }) => updateCategory(id, data),
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['categories'],
-            });
-        },
+        onSuccess: invalidateDependentQueries,
     });
 
     const deleteMutation = useMutation<void, Error, string>({
         mutationFn: deleteCategory,
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['categories'],
-            });
-        },
+        onSuccess: invalidateDependentQueries,
     });
 
     return {

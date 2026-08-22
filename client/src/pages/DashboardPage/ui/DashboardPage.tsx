@@ -3,17 +3,11 @@ import { lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AnalyticsPeriod } from '@/api/analytics.api';
-
 import { BalanceCard } from '@/widgets/dashboard/ui/BalanceCard';
-
 import { StatCard } from '@/widgets/dashboard/ui/StatCard';
-
 import { RecentTransactions } from '@/widgets/dashboard/ui/RecentTransactions';
-
 import { DashboardSkeleton } from './DashboardSkeleton/DashboardSkeleton';
-
 import { useDashboard } from '../model/useDashboard';
-
 import { useAnalytics } from '../model/useAnalytics';
 
 import styles from './DashboardPage.module.scss';

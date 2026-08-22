@@ -16,9 +16,27 @@ export const useTransactions = () => {
     const queryClient = useQueryClient();
 
     const query = useQuery<Transaction[], Error>({
-        queryKey: ['transactions'],
+        queryKey: queryKeys.transactions,
         queryFn: getTransactions,
     });
+
+    const invalidateFinancialData = () => {
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.transactions,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.accounts,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.dashboard,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.analytics,
+        });
+    };
 
     const createMutation = useMutation<
         Transaction,
@@ -27,23 +45,7 @@ export const useTransactions = () => {
     >({
         mutationFn: createTransaction,
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['transactions'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ['accounts'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.dashboard,
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.analytics,
-            });
-        },
+        onSuccess: invalidateFinancialData,
     });
 
     const updateMutation = useMutation<
@@ -56,45 +58,13 @@ export const useTransactions = () => {
     >({
         mutationFn: ({ id, data }) => updateTransaction(id, data),
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['transactions'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ['accounts'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.dashboard,
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.analytics,
-            });
-        },
+        onSuccess: invalidateFinancialData,
     });
 
     const deleteMutation = useMutation<void, Error, string>({
         mutationFn: deleteTransaction,
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['transactions'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ['accounts'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.dashboard,
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.analytics,
-            });
-        },
+        onSuccess: invalidateFinancialData,
     });
 
     return {

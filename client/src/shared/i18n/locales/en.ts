@@ -55,6 +55,11 @@ export const en = {
             initialBalance: 'Initial balance',
             creating: 'Creating...',
             createAccount: 'Create account',
+            editAccount: 'Edit account',
+            editAccountDescription: 'Update account details',
+            balance: 'Balance',
+            saveChanges: 'Save changes',
+            deleteConfirmation: 'Are you sure you want to delete this account?',
         },
 
         categories: {
@@ -74,8 +79,11 @@ export const en = {
             deleteConfirmation:
                 'Are you sure you want to delete this category?',
             yourCategories: 'Your categories',
-            addCategoryDescription: 'Add category вescription',
+            addCategoryDescription: 'Register a new category',
             createCategory: 'Create category',
+            editCategory: 'Edit category',
+            editCategoryDescription: 'Update category details',
+            saveChanges: 'Save changes',
         },
 
         language: {
@@ -162,6 +170,16 @@ export const en = {
             subtitle: 'Income and expenses overview',
             noData: 'No analytics data yet',
             chartLabel: 'Financial analytics chart',
+            categoriesTitle: 'Analytics by category',
+            categoriesSubtitle: 'Distribution of income and expenses',
+            categoriesChartLabel: 'Analytics by category chart',
+            total: 'Total',
+            changePositive: 'Increase compared to previous period',
+            changeNegative: 'Decrease compared to previous period',
+            noChange: 'No change compared to previous period',
+            improved: 'Improved',
+            decreased: 'Decreased',
+            other: 'Other',
 
             last3Months: '3 months',
             last6Months: '6 months',
@@ -177,6 +195,56 @@ export const en = {
 
             noIncome: 'No income yet',
             noExpenses: 'No expenses yet',
+        },
+
+        errors: {
+            default: 'Something went wrong',
+            unauthorized: 'You are not authorized',
+            forbidden: 'Access denied',
+            notFound: 'Resource not found',
+            validation: 'Please check the entered data',
+            server: 'Server error. Please try again later',
+
+            authenticationRequired: 'Authentication required',
+            validationFailed: 'Validation failed',
+
+            accountNotFound: 'Account not found',
+            accountHasTransactions:
+                'Account cannot be deleted because it is used by transactions',
+            failedToCreateAccount: 'Failed to create account',
+            failedToGetAccounts: 'Failed to get accounts',
+            failedToUpdateAccount: 'Failed to update account',
+            failedToDeleteAccount: 'Failed to delete account',
+
+            categoryNotFound: 'Category not found',
+            categoryNameAlreadyExists:
+                'Category name already exists for this transaction type',
+            categoryHasTransactions:
+                'Category cannot be deleted because it is used by transactions',
+            invalidCategoryId: 'Invalid category id',
+            failedToCreateCategory: 'Failed to create category',
+            failedToGetCategories: 'Failed to get categories',
+            failedToUpdateCategory: 'Failed to update category',
+            failedToDeleteCategory: 'Failed to delete category',
+
+            transactionNotFound: 'Transaction not found',
+            categoryTypeMismatch:
+                'Category type does not match transaction type',
+            failedToCreateTransaction: 'Failed to create transaction',
+            failedToGetTransactions: 'Failed to get transactions',
+            failedToUpdateTransaction: 'Failed to update transaction',
+            failedToDeleteTransaction: 'Failed to delete transaction',
+
+            internalServerError: 'Internal server error',
+            unknown: 'An unknown error occurred',
+
+            invalidToken: 'Invalid token',
+            invalidOrExpiredToken: 'Invalid or expired token',
+
+            USER_ALREADY_EXISTS: 'User with this email already exists',
+            INVALID_CREDENTIALS: 'Invalid email or password',
+            USER_NOT_FOUND: 'User not found',
+            AUTHENTICATION_REQUIRED: 'Authentication required',
         },
     },
 };

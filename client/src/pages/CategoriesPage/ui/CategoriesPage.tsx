@@ -1,24 +1,15 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import type {
-    Category,
-    CreateCategoryInput,
-    UpdateCategoryInput,
-} from '@/api/categories.api';
-
-import { CategoryCard } from '@/widgets/categories/CategoryCard';
+import { ApiErrorMessage } from '@/shared/api/ApiErrorMessage';
 
 import { useCategories } from '../model/useCategories';
-
+import { useCategoryModal } from '../model/useCategoryModal';
+import { CategoriesHeader } from './CategoriesHeader/CategoriesHeader';
+import { CategoriesList } from './CategoriesList/CategoriesList';
 import { CategoriesSkeleton } from './CategoriesSkeleton/CategoriesSkeleton';
 import { CategoryModal } from './CategoryModal/CategoryModal';
 
 import styles from './CategoriesPage.module.scss';
 
 export const CategoriesPage = () => {
-    const { t } = useTranslation();
-
     const {
         categories,
         isLoading,
@@ -37,69 +28,28 @@ export const CategoriesPage = () => {
         deleteError,
     } = useCategories();
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const {
+        isModalOpen,
+        editingCategory,
+        isSubmitting,
 
-    const [editingCategory, setEditingCategory] = useState<Category | null>(
-        null,
-    );
+        handleOpenCreate,
+        handleEditCategory,
+        handleCloseModal,
+        handleSubmit,
+    } = useCategoryModal({
+        createCategory,
+        updateCategory,
+        isCreating,
+        isUpdating,
+    });
 
     if (isLoading) {
         return <CategoriesSkeleton />;
     }
 
-    if (error) {
-        return (
-            <main className={styles.categories}>
-                <div className={styles.container}>
-                    <div className={styles.error} role="alert">
-                        {t('categories.error')}
-                    </div>
-                </div>
-            </main>
-        );
-    }
-
-    const handleOpenCreate = () => {
-        setEditingCategory(null);
-        setIsModalOpen(true);
-    };
-
-    const handleEditCategory = (category: Category) => {
-        setEditingCategory(category);
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setEditingCategory(null);
-    };
-
-    const handleCreateCategory = async (data: CreateCategoryInput) => {
-        try {
-            await createCategory(data);
-
-            handleCloseModal();
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const handleUpdateCategory = async (data: UpdateCategoryInput) => {
-        if (!editingCategory) {
-            return;
-        }
-
-        try {
-            await updateCategory({
-                id: editingCategory.id,
-                data,
-            });
-
-            handleCloseModal();
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const mutationError = createError ?? updateError ?? deleteError;
+    const modalError = createError ?? updateError;
 
     const handleDeleteCategory = async (id: string) => {
         try {
@@ -109,79 +59,39 @@ export const CategoriesPage = () => {
         }
     };
 
-    const handleSubmit = async (
-        data: CreateCategoryInput | UpdateCategoryInput,
-    ) => {
-        if (editingCategory) {
-            await handleUpdateCategory(data as UpdateCategoryInput);
-
-            return;
-        }
-
-        await handleCreateCategory(data as CreateCategoryInput);
-    };
-
-    const mutationError = createError ?? updateError ?? deleteError;
-
     return (
         <main className={styles.categories}>
             <div className={styles.container}>
-                <header className={styles.header}>
-                    <div>
-                        <h1 className={styles.title}>
-                            {t('categories.title')}
-                        </h1>
+                <CategoriesHeader
+                    isSubmitting={isSubmitting}
+                    onAddCategory={handleOpenCreate}
+                />
 
-                        <p className={styles.subtitle}>
-                            {t('categories.subtitle')}
-                        </p>
-                    </div>
-
-                    <button
-                        type="button"
-                        className={styles.addButton}
-                        onClick={handleOpenCreate}
-                    >
-                        {t('categories.addCategory')}
-                    </button>
-                </header>
-
-                {mutationError && (
-                    <div className={styles.error} role="alert">
-                        {mutationError.message}
+                {error && (
+                    <div className={styles.error}>
+                        <ApiErrorMessage error={error} />
                     </div>
                 )}
 
-                <section>
-                    <h2 className={styles.sectionTitle}>
-                        {t('categories.yourCategories')}
-                    </h2>
+                {mutationError && (
+                    <div className={styles.error}>
+                        <ApiErrorMessage error={mutationError} />
+                    </div>
+                )}
 
-                    {categories.length === 0 ? (
-                        <p className={styles.empty}>
-                            {t('categories.noCategories')}
-                        </p>
-                    ) : (
-                        <div className={styles.grid}>
-                            {categories.map((category) => (
-                                <CategoryCard
-                                    key={category.id}
-                                    category={category}
-                                    onEdit={handleEditCategory}
-                                    onDelete={handleDeleteCategory}
-                                    isDeleting={isDeleting}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </section>
+                <CategoriesList
+                    categories={categories}
+                    isDeleting={isDeleting}
+                    onEdit={handleEditCategory}
+                    onDelete={handleDeleteCategory}
+                />
             </div>
 
             <CategoryModal
                 key={editingCategory?.id ?? 'create'}
                 isOpen={isModalOpen}
-                isSubmitting={isCreating || isUpdating}
-                error={createError ?? updateError}
+                isSubmitting={isSubmitting}
+                error={modalError}
                 category={editingCategory}
                 onClose={handleCloseModal}
                 onSubmit={handleSubmit}

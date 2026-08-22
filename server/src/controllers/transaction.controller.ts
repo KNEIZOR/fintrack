@@ -13,6 +13,7 @@ export const create = async (req: AuthRequest, res: Response) => {
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -22,6 +23,7 @@ export const create = async (req: AuthRequest, res: Response) => {
     if (!result.success) {
         return res.status(400).json({
             status: 'error',
+            code: 'VALIDATION_FAILED',
             message: 'Validation failed',
             errors: result.error.flatten().fieldErrors,
         });
@@ -41,13 +43,19 @@ export const create = async (req: AuthRequest, res: Response) => {
         console.error(error);
 
         if (error instanceof Error) {
-            if (
-                error.message === 'Account not found' ||
-                error.message === 'Category not found'
-            ) {
+            if (error.message === 'Account not found') {
                 return res.status(404).json({
                     status: 'error',
-                    message: error.message,
+                    code: 'ACCOUNT_NOT_FOUND',
+                    message: 'Account not found',
+                });
+            }
+
+            if (error.message === 'Category not found') {
+                return res.status(404).json({
+                    status: 'error',
+                    code: 'CATEGORY_NOT_FOUND',
+                    message: 'Category not found',
                 });
             }
 
@@ -57,13 +65,15 @@ export const create = async (req: AuthRequest, res: Response) => {
             ) {
                 return res.status(409).json({
                     status: 'error',
-                    message: error.message,
+                    code: 'CATEGORY_TYPE_MISMATCH',
+                    message: 'Category type does not match transaction type',
                 });
             }
         }
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_CREATE_TRANSACTION',
             message: 'Failed to create transaction',
         });
     }
@@ -73,6 +83,7 @@ export const getAll = async (req: AuthRequest, res: Response) => {
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -91,6 +102,7 @@ export const getAll = async (req: AuthRequest, res: Response) => {
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_GET_TRANSACTIONS',
             message: 'Failed to get transactions',
         });
     }
@@ -103,6 +115,7 @@ export const update = async (
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -112,6 +125,7 @@ export const update = async (
     if (!result.success) {
         return res.status(400).json({
             status: 'error',
+            code: 'VALIDATION_FAILED',
             message: 'Validation failed',
             errors: result.error.flatten().fieldErrors,
         });
@@ -132,14 +146,27 @@ export const update = async (
         console.error(error);
 
         if (error instanceof Error) {
-            if (
-                error.message === 'Transaction not found' ||
-                error.message === 'Account not found' ||
-                error.message === 'Category not found'
-            ) {
+            if (error.message === 'Transaction not found') {
                 return res.status(404).json({
                     status: 'error',
-                    message: error.message,
+                    code: 'TRANSACTION_NOT_FOUND',
+                    message: 'Transaction not found',
+                });
+            }
+
+            if (error.message === 'Account not found') {
+                return res.status(404).json({
+                    status: 'error',
+                    code: 'ACCOUNT_NOT_FOUND',
+                    message: 'Account not found',
+                });
+            }
+
+            if (error.message === 'Category not found') {
+                return res.status(404).json({
+                    status: 'error',
+                    code: 'CATEGORY_NOT_FOUND',
+                    message: 'Category not found',
                 });
             }
 
@@ -149,13 +176,15 @@ export const update = async (
             ) {
                 return res.status(409).json({
                     status: 'error',
-                    message: error.message,
+                    code: 'CATEGORY_TYPE_MISMATCH',
+                    message: 'Category type does not match transaction type',
                 });
             }
         }
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_UPDATE_TRANSACTION',
             message: 'Failed to update transaction',
         });
     }
@@ -168,6 +197,7 @@ export const remove = async (
     if (!req.userId) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -187,12 +217,14 @@ export const remove = async (
         ) {
             return res.status(404).json({
                 status: 'error',
+                code: 'TRANSACTION_NOT_FOUND',
                 message: 'Transaction not found',
             });
         }
 
         return res.status(500).json({
             status: 'error',
+            code: 'FAILED_TO_DELETE_TRANSACTION',
             message: 'Failed to delete transaction',
         });
     }

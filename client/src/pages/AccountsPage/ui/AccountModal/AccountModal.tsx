@@ -8,6 +8,8 @@ import type {
     UpdateAccountInput,
 } from '@/api/accounts.api';
 
+import { getApiErrorMessage } from '@/shared/api/apiError';
+
 import styles from './AccountModal.module.scss';
 
 interface AccountModalProps {
@@ -65,6 +67,8 @@ export const AccountModal = ({
             setBalance('0');
         }
     };
+
+    const errorMessage = error ? getApiErrorMessage(error) : null;
 
     return (
         <div className={styles.overlay} onMouseDown={onClose}>
@@ -159,9 +163,7 @@ export const AccountModal = ({
                                 }
                             >
                                 <option value="EUR">EUR</option>
-
                                 <option value="USD">USD</option>
-
                                 <option value="GBP">GBP</option>
                             </select>
                         </div>
@@ -186,9 +188,9 @@ export const AccountModal = ({
                         </div>
                     </div>
 
-                    {error && (
+                    {errorMessage && (
                         <div className={styles.error} role="alert">
-                            {error.message}
+                            {errorMessage}
                         </div>
                     )}
 

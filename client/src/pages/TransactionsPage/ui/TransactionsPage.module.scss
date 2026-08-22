@@ -9,78 +9,6 @@
     margin: 0 auto;
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 32px;
-}
-
-.title {
-    margin: 0;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1.2;
-    color: #111827;
-}
-
-.subtitle {
-    margin: 8px 0 0;
-    font-size: 15px;
-    line-height: 1.5;
-    color: #6b7280;
-}
-
-.addButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 20px;
-
-    border: 1px solid #111827;
-    border-radius: 10px;
-
-    background: #111827;
-    color: #ffffff;
-
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1;
-
-    cursor: pointer;
-
-    transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
-
-    &:hover {
-        background: #1f2937;
-        border-color: #1f2937;
-        box-shadow: 0 6px 16px rgba(17, 24, 39, 0.16);
-    }
-
-    &:active {
-        transform: translateY(1px);
-        box-shadow: none;
-    }
-
-    &:focus-visible {
-        outline: 3px solid rgba(59, 130, 246, 0.25);
-        outline-offset: 2px;
-    }
-
-    &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        box-shadow: none;
-        transform: none;
-    }
-}
-
 .error {
     margin-bottom: 24px;
     padding: 14px 16px;
@@ -96,33 +24,6 @@
 
 .section {
     width: 100%;
-}
-
-.sectionTitle {
-    margin: 0 0 20px;
-
-    font-size: 20px;
-    font-weight: 650;
-    color: #111827;
-}
-
-.list {
-    display: grid;
-    gap: 12px;
-}
-
-.empty {
-    margin: 0;
-    padding: 40px 20px;
-
-    border: 1px dashed #d1d5db;
-    border-radius: 12px;
-
-    background: #f9fafb;
-
-    color: #6b7280;
-    text-align: center;
-    font-size: 14px;
 }
 
 .sectionHeader {
@@ -150,7 +51,6 @@
     height: 24px;
 
     margin: 6px 0 0;
-
     padding: 0 8px;
 
     border-radius: 999px;
@@ -158,33 +58,13 @@
     background: #f3f4f6;
     color: #6b7280;
 
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
 }
 
 @media (max-width: 768px) {
     .transactions {
         padding: 20px 16px;
-    }
-
-    .header {
-        align-items: stretch;
-        flex-direction: column;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .title {
-        font-size: 26px;
-    }
-
-    .subtitle {
-        font-size: 14px;
-    }
-
-    .addButton {
-        width: 100%;
-        min-height: 48px;
     }
 
     .sectionTitle {
@@ -195,14 +75,5 @@
 @media (max-width: 480px) {
     .transactions {
         padding: 16px 12px;
-    }
-
-    .title {
-        font-size: 24px;
-    }
-
-    .addButton {
-        min-height: 46px;
-        padding: 0 16px;
     }
 }

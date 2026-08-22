@@ -26,6 +26,7 @@ export const authMiddleware = (
     if (!token) {
         return res.status(401).json({
             status: 'error',
+            code: 'AUTHENTICATION_REQUIRED',
             message: 'Authentication required',
         });
     }
@@ -40,6 +41,7 @@ export const authMiddleware = (
         ) {
             return res.status(401).json({
                 status: 'error',
+                code: 'INVALID_TOKEN',
                 message: 'Invalid token',
             });
         }
@@ -50,6 +52,7 @@ export const authMiddleware = (
     } catch {
         return res.status(401).json({
             status: 'error',
+            code: 'INVALID_OR_EXPIRED_TOKEN',
             message: 'Invalid or expired token',
         });
     }
