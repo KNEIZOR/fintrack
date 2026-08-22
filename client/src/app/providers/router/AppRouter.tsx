@@ -15,6 +15,8 @@ import { PublicRoute } from './PublicRoute';
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 
+const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
+
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 
 const AccountsPage = lazy(() => import('@/pages/AccountsPage'));
@@ -30,6 +32,8 @@ export const AppRouter = () => {
                 {/* Public routes */}
                 <Route element={<PublicRoute />}>
                     <Route path="/login" element={<LoginPage />} />
+
+                    <Route path="/register" element={<RegisterPage />} />
                 </Route>
 
                 {/* Protected routes */}

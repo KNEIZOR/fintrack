@@ -100,6 +100,16 @@ export const en = {
             loginSubtitle: 'Sign in to your FinTrack account',
             loginError: 'Failed to login',
             logout: 'Log out',
+
+            name: 'Name',
+            confirmPassword: 'Confirm password',
+            register: 'Register',
+            registering: 'Creating account...',
+            registerSubtitle: 'Create your FinTrack account',
+            noAccount: "Don't have an account?",
+            haveAccount: 'Already have an account?',
+            passwordsDoNotMatch: 'Passwords do not match',
+            namePlaceholder: 'Enter your name',
         },
 
         transactions: {

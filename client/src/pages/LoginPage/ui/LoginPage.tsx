@@ -1,22 +1,26 @@
 import { type FormEvent, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import { ApiErrorMessage } from '@/shared/api/ApiErrorMessage';
 import { useAuth } from '@/shared/auth';
 
 import styles from './LoginPage.module.scss';
 
 export const LoginPage = () => {
     const { t } = useTranslation();
+
     const { login } = useAuth();
 
     const navigate = useNavigate();
+
     const location = useLocation();
 
-    const [email, setEmail] = useState('denis@fintrack.com');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<Error | null>(null);
+
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -33,12 +37,14 @@ export const LoginPage = () => {
 
             const from = location.state?.from?.pathname || '/';
 
-            navigate(from, { replace: true });
+            navigate(from, {
+                replace: true,
+            });
         } catch (error) {
             console.error(error);
 
             setError(
-                error instanceof Error ? error.message : t('auth.loginError'),
+                error instanceof Error ? error : new Error(t('errors.unknown')),
             );
         } finally {
             setIsLoading(false);
@@ -93,11 +99,7 @@ export const LoginPage = () => {
                         />
                     </div>
 
-                    {error && (
-                        <div className={styles.error} role="alert">
-                            {error}
-                        </div>
-                    )}
+                    {error && <ApiErrorMessage error={error} />}
 
                     <button
                         className={styles.submit}
@@ -106,6 +108,13 @@ export const LoginPage = () => {
                     >
                         {isLoading ? t('auth.loggingIn') : t('auth.login')}
                     </button>
+
+                    <p className={styles.registerText}>
+                        {t('auth.noAccount')}{' '}
+                        <Link className={styles.registerLink} to="/register">
+                            {t('auth.register')}
+                        </Link>
+                    </p>
                 </form>
             </div>
         </main>

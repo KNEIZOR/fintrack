@@ -100,6 +100,16 @@ export const ru = {
             loginSubtitle: 'Войдите в свой аккаунт FinTrack',
             loginError: 'Не удалось войти',
             logout: 'Выйти',
+
+            name: 'Имя',
+            confirmPassword: 'Повторите пароль',
+            register: 'Зарегистрироваться',
+            registering: 'Создание аккаунта...',
+            registerSubtitle: 'Создайте аккаунт FinTrack',
+            noAccount: 'Нет аккаунта?',
+            haveAccount: 'Уже есть аккаунт?',
+            passwordsDoNotMatch: 'Пароли не совпадают',
+            namePlaceholder: 'Введите ваше имя',
         },
 
         transactions: {
