@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fintrack-tracker.vercel.app/sitemap.xml
