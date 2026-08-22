@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { loginSchema, registerSchema } from '../schemas/auth.schema.js';
-import { loginUser, registerUser } from '../services/auth.service.js';
+import { loginUser, registerUser } from '../services/auth.service.js'
 import { prisma } from '../lib/prisma.js';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 
