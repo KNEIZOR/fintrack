@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ApiErrorMessage } from '@/shared/api/ApiErrorMessage';
 import { useAuth } from '@/shared/auth';
+import { LanguageSwitcher } from '@/widgets/header/ui/LanguageSwitcher';
 
 import styles from './LoginPage.module.scss';
 
@@ -13,14 +14,12 @@ export const LoginPage = () => {
     const { login } = useAuth();
 
     const navigate = useNavigate();
-
     const location = useLocation();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const [error, setError] = useState<Error | null>(null);
-
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -54,6 +53,10 @@ export const LoginPage = () => {
     return (
         <main className={styles.login}>
             <div className={styles.card}>
+                <div className={styles.language}>
+                    <LanguageSwitcher />
+                </div>
+
                 <div className={styles.header}>
                     <div className={styles.logo}>F</div>
 

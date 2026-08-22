@@ -3,8 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import type { RegisterInput } from '@/api/auth.api';
+
 import { register } from '@/api/auth.api';
+
 import { ApiErrorMessage } from '@/shared/api/ApiErrorMessage';
+import { LanguageSwitcher } from '@/widgets/header/ui/LanguageSwitcher';
 
 import styles from './RegisterPage.module.scss';
 
@@ -73,6 +76,10 @@ export const RegisterPage = () => {
     return (
         <main className={styles.register}>
             <div className={styles.card}>
+                <div className={styles.language}>
+                    <LanguageSwitcher />
+                </div>
+
                 <div className={styles.header}>
                     <div className={styles.logo}>F</div>
 
