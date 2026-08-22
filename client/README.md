@@ -1,75 +1,286 @@
-# React + TypeScript + Vite
+# FinTrack Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend-часть приложения FinTrack — SPA на React + TypeScript.
 
-Currently, two official plugins are available:
+Клиент отвечает за пользовательский интерфейс, маршрутизацию, авторизацию, CRUD-операции, фильтрацию транзакций, аналитику и локализацию.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+* React
+* TypeScript
+* Vite
+* React Router
+* TanStack React Query
+* SCSS Modules
+* react-i18next
+* Lucide React
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Architecture
 
-## Expanding the ESLint configuration
+Frontend построен с разделением ответственности между страницами, widgets, API-слоем, layout и shared-компонентами.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+client/
+├── src/
+│   ├── api/
+│   ├── layouts/
+│   ├── pages/
+│   ├── widgets/
+│   ├── shared/
+│   └── ...
+├── public/
+├── index.html
+├── vercel.json
+└── package.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Pages
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+pages/
+├── LoginPage/
+├── RegisterPage/
+├── DashboardPage/
+├── AccountsPage/
+├── CategoriesPage/
+└── TransactionsPage/
 ```
+
+Страницы используются как orchestration layer и не содержат всю бизнес-логику внутри JSX.
+
+Например:
+
+```text
+TransactionsPage
+├── TransactionsHeader
+├── TransactionsFilters
+├── TransactionsList
+├── TransactionModal
+│
+├── useTransactions
+├── useTransactionFilters
+└── useTransactionModal
+```
+
+## Features
+
+### Authentication
+
+* login;
+* registration;
+* logout;
+* получение текущего пользователя;
+* protected routes;
+* public routes;
+* HTTP-only JWT authentication;
+* локализованные ошибки.
+
+### Dashboard
+
+* общий баланс;
+* доходы;
+* расходы;
+* последние транзакции;
+* финансовая статистика.
+
+### Accounts
+
+* создание;
+* редактирование;
+* удаление;
+* различные типы счетов;
+* несколько валют.
+
+### Categories
+
+* создание;
+* редактирование;
+* удаление;
+* защита от удаления используемых категорий.
+
+### Transactions
+
+* создание;
+* редактирование;
+* удаление;
+* поиск;
+* фильтрация;
+* сортировка;
+* доходы и расходы.
+
+### Analytics
+
+* статистика за различные периоды;
+* доходы и расходы;
+* аналитика по категориям;
+* графики.
+
+### Internationalization
+
+Поддерживаются:
+
+* Русский;
+* English.
+
+Переводы реализованы через `react-i18next`.
+
+Переключатель языка доступен как в основном приложении, так и на публичных authentication pages.
+
+## API Layer
+
+Вызовы backend сосредоточены в `src/api`.
+
+Пример:
+
+```text
+src/api/
+├── accounts.api.ts
+├── auth.api.ts
+├── categories.api.ts
+├── dashboard.api.ts
+└── transactions.api.ts
+```
+
+Общий HTTP-клиент:
+
+```text
+src/shared/api/
+├── api.ts
+├── apiClient.ts
+└── ApiErrorMessage.tsx
+```
+
+API errors преобразуются в `ApiError` и отображаются с учётом текущего языка.
+
+## State Management
+
+Server state управляется через TanStack React Query.
+
+После mutations выполняется invalidation соответствующих query:
+
+```text
+Create / Update / Delete
+        ↓
+Mutation
+        ↓
+invalidateQueries
+        ↓
+Fresh server data
+        ↓
+UI update
+```
+
+## Routing
+
+Используется React Router.
+
+Public routes:
+
+```text
+/login
+/register
+```
+
+Protected routes:
+
+```text
+/
+/accounts
+/categories
+/transactions
+```
+
+Authentication guards:
+
+```text
+PublicRoute
+ProtectedRoute
+```
+
+## Loading States
+
+Для основных страниц используются специализированные skeleton-компоненты:
+
+```text
+DashboardSkeleton
+AccountsSkeleton
+CategoriesSkeleton
+TransactionsSkeleton
+PageSkeleton
+```
+
+Также предусмотрены empty и error states.
+
+## Environment
+
+Для локальной разработки:
+
+```env
+VITE_API_URL=http://localhost:4000
+```
+
+Для production URL backend задаётся через Vercel Environment Variables:
+
+```env
+VITE_API_URL=https://fintrack-api-id42.onrender.com
+```
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Preview
+
+```bash
+npm run preview
+```
+
+## Production
+
+Frontend deployed to Vercel.
+
+Live:
+
+https://fintrack-tracker.vercel.app
+
+## Quality
+
+Latest Lighthouse results:
+
+```text
+Performance      98
+Accessibility   100
+Best Practices   96
+SEO              82
+```
+
+## Routing on Vercel
+
+SPA routing поддерживается через `vercel.json`.
+
+Прямое открытие маршрутов:
+
+```text
+/login
+/register
+/accounts
+/categories
+/transactions
+```
+
+обрабатывается React Router после загрузки приложения.
